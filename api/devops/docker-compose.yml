@@ -1,0 +1,32 @@
+version: '3.7'
+networks:
+  vcf-handler-api-network:
+    driver: bridge
+    name: vcf-handler-api-network
+services:
+  vcf-handler-api-postgresql:
+    image: postgres:11
+    container_name: vcf-handler-api-postgresql
+    restart: always
+    networks:
+      - vcf-handler-api-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vcf_handler_api"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: "vcf_handler_api"
+      POSTGRES_PASSWORD: "123456"
+      POSTGRES_DB: "vcf_handler_api"
+    volumes:
+      - /var/lib/postgresql/vcf-handler-api/data:/var/lib/postgresql/data
+      - /var/log/postgresql/vcf-handler-api:/var/log/postgresql
+  vcf-handler-api-migrations:
+    image: "vcf-handler-api-migrations:0.1"
+    container_name: vcf-handler-api-migrations
+    restart: "no"
+    networks:
+      - vcf-handler-api-network
+    depends_on:
+      - vcf-handler-api-postgresql
