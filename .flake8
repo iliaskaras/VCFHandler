@@ -1,0 +1,7 @@
+[flake8]
+select = BLK,C,F,E,W,C90,I,B,B9,S,ANN
+application-import-names = application, tests
+import-order-style = google
+max-complexity = 15
+ignore = E203,E501,W503,ANN101 #//E203 (Whitespace before ‘:'),E501 max length line ,W503 (Line break before binary operator)
+max-line-length = 88
