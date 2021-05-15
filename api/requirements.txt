@@ -14,3 +14,4 @@ flake8==3.8.4
 mypy==0.800
 pylint
 black
+gunicorn==20.0.4

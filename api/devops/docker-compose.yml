@@ -32,3 +32,17 @@ services:
       - vcf-handler-api-network
     depends_on:
       - vcf-handler-api-postgresql
+  vcf-handler-api:
+    image: "vcf-handler-api:0.1"
+    container_name: vcf-handler-api
+    restart: always
+    networks:
+      - vcf-handler-api-network
+    environment:
+      VCF_FILES_API_ENVIRONMENT: "local"
+      POSTGRESQL_CONNECTION_URI: "postgresql+psycopg2://vcf_handler_api:123456@vcf-handler-api-postgresql:5432/vcf_handler_api"
+    depends_on:
+      - vcf-handler-api-postgresql
+      - vcf-handler-api-migrations
+    ports:
+      - "0.0.0.0:8000:8000"

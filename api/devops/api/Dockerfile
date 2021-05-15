@@ -1,0 +1,43 @@
+FROM python:3.8.2
+
+ARG vcf_handler_api_user_id=9003
+ARG vcf_handler_api_group_id=9003
+
+# Environment variables such as salt, jwt_secret_key and postgresql_connection_uri should not be desplayed like that
+# and instead be passed with some other mechanism that hides these information. Ansible could be used for example.
+ARG vcf_handler_api_directory="/usr/local/vcf-handler-api"
+ARG vcf_files_api_environment="local"
+ARG postgresql_connection_uri="postgresql+psycopg2://vcf_handler_api:123456@0.0.0.0:5432/vcf_handler_api"
+ARG salt="salt"
+ARG jwt_secret_key="6\xd8y\x80&q\xe2\xe2yO\xf5\xb5\xbf\xdbw."
+
+ENV VCF_HANDLER_API_DIRECTORY ${vcf_handler_api_directory}
+ENV VCF_FILES_API_ENVIRONMENT ${vcf_files_api_environment}
+ENV POSTGRESQL_CONNECTION_URI ${postgresql_connection_uri}
+ENV SALT ${salt}
+ENV JWT_SECRET_KEY ${jwt_secret_key}
+
+# Create VCF Handler API group and user.
+RUN groupadd --system --gid ${vcf_handler_api_group_id} vcfapiuser \
+  && useradd --system --shell /usr/sbin/nologin \
+             --gid vcfapiuser --uid ${vcf_handler_api_user_id} vcfapiuser
+
+# Create VCF File Handler API directory.
+RUN mkdir -p ${vcf_handler_api_directory}/src \
+  && chown -R vcfapiuser:vcfapiuser ${vcf_handler_api_directory} \
+  && chmod -R 770 ${vcf_handler_api_directory}
+
+# Copy and install VCF File Handler API requirements.txt.
+COPY --chown=vcfapiuser:vcfapiuser "requirements.txt" ${vcf_handler_api_directory}/
+RUN chmod 600 ${vcf_handler_api_directory}/requirements.txt \
+  && pip3 install -r ${vcf_handler_api_directory}/requirements.txt
+
+# Copy VCF File Handler API source code.
+COPY --chown=vcfapiuser:vcfapiuser "src" ${vcf_handler_api_directory}/src/
+
+# Run VCF File Handler API.
+WORKDIR ${vcf_handler_api_directory}
+ENV PYTHONPATH ${vcf_handler_api_directory}/src
+USER vcfapiuser
+ENTRYPOINT ["gunicorn", "application.wsgi:application"]
+CMD ["--bind", "0.0.0.0:8000", "--workers", "2"]
