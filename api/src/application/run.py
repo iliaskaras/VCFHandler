@@ -1,7 +1,6 @@
 from argparse import ArgumentParser
 
 from application.factories import vcf_handler_api
-from application.infrastructure.configurations.models import Configuration
 
 if __name__ == "__main__":
     argument_parser = ArgumentParser(description="VCF Handler API")
@@ -24,10 +23,6 @@ if __name__ == "__main__":
 
     arguments = argument_parser.parse_args()
 
-    # Initialize the configuration instance.
-    configuration = Configuration.initialize()
-
     vcf_handler_api(
         name="VCF Handler API",
-        configuration=configuration,
     ).run(host=arguments.host, port=arguments.port)

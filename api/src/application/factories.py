@@ -15,21 +15,20 @@ from application.infrastructure.sql.sqlalchemy import SQLAlchemyEngineWrapper
 from application.rest_api.rest_plus import api
 
 
-def vcf_handler_api(name: str, configuration: Configuration) -> Flask:
+def vcf_handler_api(name: str) -> Flask:
     """
     The Flask Application Factory for the VCF Handler API.
     Initializes and returns the VCF Handler Flask application.
 
     @:param name: The name of the Flask application.
-    @:param configuration: The configuration of the Flask application.
 
     @return: The VCF Handler Flask application.
     """
-    if not configuration:
-        raise InvalidArgumentError("The application configuration is required.")
-
     if not name:
         raise InvalidArgumentError("The application name is required.")
+
+    # Initialize the configuration instance.
+    configuration = Configuration.initialize()
 
     # Initialize the SQLAlchemyEngineWrapper. It is a Singleton object and can be referenced
     # from the rest of the application when needed by using its get_instance method.
