@@ -9,9 +9,11 @@ import uuid
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy import Enum
 from sqlalchemy.dialects import postgresql
 
-# revision identifiers, used by Alembic.
+from application.user.enums import Permission
+
 revision = '1'
 down_revision = None
 branch_labels = None
@@ -26,12 +28,37 @@ def upgrade():
 
         sa.Column('email', sa.String(), unique=True, nullable=False),
         sa.Column('password', sa.String(), nullable=False),
+        sa.Column(
+            'permission',
+            Enum(
+                'write', 'execute', 'read',
+                name='Task',
+                validate_strings=True
+            ),
+            nullable=False,
+        ),
     )
-    op.execute('INSERT INTO users (uuid, email, password) VALUES (\'{0}\', \'{1}\', \'{2}\')'.format(
-        str(uuid.uuid4()),
-        'user@mail.test',
-        '123456')
-    )
+    op.execute('INSERT INTO users (uuid, email, password, permission) VALUES (\'{0}\', \'{1}\', \'{2}\', \'{3}\')'
+        .format(
+            str(uuid.uuid4()),
+            'read_user@mail.test',
+            '123456',
+            Permission.read.value)
+        )
+    op.execute('INSERT INTO users (uuid, email, password, permission) VALUES (\'{0}\', \'{1}\', \'{2}\', \'{3}\')'
+        .format(
+            str(uuid.uuid4()),
+            'write_user@mail.test',
+            '123456',
+            Permission.write.value)
+        )
+    op.execute('INSERT INTO users (uuid, email, password, permission) VALUES (\'{0}\', \'{1}\', \'{2}\', \'{3}\')'
+        .format(
+            str(uuid.uuid4()),
+            'execute_user@mail.test',
+            '123456',
+            Permission.execute.value)
+        )
 
 
 def downgrade():
