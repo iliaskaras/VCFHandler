@@ -26,7 +26,7 @@ RUN mkdir -p ${vcf_handler_api_directory}/src \
 
 # Copy VCF Handler API migrations code.
 COPY --chown=migrationuser:migrationuser "src" ${vcf_handler_api_directory}/src/
-COPY --chown=migrationuser:migrationuser "devops/migrations/migrations_entrypoint.py" "alembic.ini" ${vcf_handler_api_directory}/
+COPY --chown=migrationuser:migrationuser "alembic.ini" ${vcf_handler_api_directory}/
 
 WORKDIR ${vcf_handler_api_directory}
 ENV PYTHONPATH ${vcf_handler_api_directory}/src

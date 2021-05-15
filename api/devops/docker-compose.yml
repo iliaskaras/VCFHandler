@@ -22,6 +22,8 @@ services:
     volumes:
       - /var/lib/postgresql/vcf-handler-api/data:/var/lib/postgresql/data
       - /var/log/postgresql/vcf-handler-api:/var/log/postgresql
+    ports:
+      - "0.0.0.0:5432:5432"
   vcf-handler-api-migrations:
     image: "vcf-handler-api-migrations:0.1"
     container_name: vcf-handler-api-migrations
