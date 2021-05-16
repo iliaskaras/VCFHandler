@@ -37,5 +37,9 @@ class AuthorizationHttpError(PublicHttpError):
     ERROR_CODE = 403
 
 
+class NotFoundHttpError(PublicHttpError):
+    ERROR_CODE = 404
+
+
 class InternalServerHttpError(PublicHttpError):
     ERROR_CODE = 500
