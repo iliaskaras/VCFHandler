@@ -46,3 +46,5 @@ services:
       - vcf-handler-api-migrations
     ports:
       - "0.0.0.0:8000:8000"
+    volumes:
+      - /mnt/data:/mnt/data
