@@ -10,7 +10,9 @@ from application.rest_api.configurations import configure_api_error_handling
 from application.rest_api.authentication.controllers import (
     ns as authentication_namespace,
 )
-
+from application.rest_api.vcf_files.controllers import (
+    ns as vcf_files_namespace,
+)
 from application.infrastructure.sql.sqlalchemy import SQLAlchemyEngineWrapper
 from application.rest_api.rest_plus import api
 
@@ -49,7 +51,7 @@ def vcf_handler_api(name: str) -> Flask:
         origins="*",
         allow_headers=[
             "Content-Type",
-            "Authorization"
+            "Authorization",
         ],
     )
 
@@ -63,6 +65,8 @@ def vcf_handler_api(name: str) -> Flask:
     blueprint = Blueprint("api", name, url_prefix="/api/v1")
 
     api.add_namespace(authentication_namespace)
+    api.add_namespace(vcf_files_namespace)
+
     configure_api_error_handling(api)
     api.init_app(blueprint)
 
