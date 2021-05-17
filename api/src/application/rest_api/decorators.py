@@ -18,7 +18,8 @@ from application.rest_api.models import BaseToHttpErrorPair
 from json2xml import json2xml
 
 from application.rest_api.utils import ETagManager
-from application.vcf_files.errors import VcfRowsByIdNotExistError, VcfDataAppendError, VcfDataDeleteError
+from application.vcf_files.errors import VcfRowsByIdNotExistError, VcfDataAppendError, VcfNoDataDeletedError, \
+    VcfDataDeleteError
 
 
 def map_request(schema: Schema) -> Callable:
@@ -165,11 +166,15 @@ def map_errors() -> Callable:
             ),
             BaseToHttpErrorPair(
                 vcf_handler_base_error=VcfDataAppendError(),
-                public_error=InternalServerHttpError(),
+                public_error=BadRequestHttpError(),
             ),
             BaseToHttpErrorPair(
                 vcf_handler_base_error=VcfDataDeleteError(),
-                public_error=InternalServerHttpError(),
+                public_error=BadRequestHttpError(),
+            ),
+            BaseToHttpErrorPair(
+                vcf_handler_base_error=VcfNoDataDeletedError(),
+                public_error=NotFoundHttpError(),
             ),
         ],
     )
