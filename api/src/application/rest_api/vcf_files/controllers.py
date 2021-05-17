@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import List
 
 from flask_restplus import Resource
 from flask_accept import accept
@@ -24,6 +24,7 @@ ns = api.namespace(
 class VcfFilePagination(Resource):
     @accept(AcceptHeader.json.value, AcceptHeader.xml.value, AcceptHeader.all.value)
     @map_errors()
+    @guard(permission=Permission.execute)
     @map_request(VcfFilePaginationRequestSchema())
     @check_etag()
     @add_etag(add_etag=True)

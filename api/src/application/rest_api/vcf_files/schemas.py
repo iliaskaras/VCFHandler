@@ -1,5 +1,4 @@
 import re
-from typing import List
 
 from marshmallow import fields, validate, post_load
 from marshmallow.schema import BaseSchema, Schema
@@ -22,37 +21,18 @@ class PostVcfRowSchema(Schema):
     ref = fields.Str(
         data_key='REF',
         required=True,
-        validate=validate.Regexp(regex=re.compile("^([ACGT.]$)"))
+        validate=validate.Regexp(regex=re.compile("^[ACGT.]{1,5}$"))
     )
     alt = fields.Str(
         data_key='ALT',
         required=True,
-        validate=validate.Regexp(regex=re.compile("^([ACGT.]$)"))
+        validate=validate.Regexp(regex=re.compile("^[ACGT.]{1,5}$"))
     )
 
     @post_load
     def load_vcf_row(self, data, **kwargs):
-        vcf_rows: List[VcfRow] = []
         if isinstance(data, dict):
-            return VcfRow(
-                chrom=data['CHROM'],
-                pos=data['POS'],
-                identifier=data['ID'],
-                ref=data['REF'],
-                alt=data['ALT'],
-            )
-        elif isinstance(data, List):
-            for _data in data:
-                vcf_rows.append(
-                    VcfRow(
-                        chrom=_data['CHROM'],
-                        pos=_data['POS'],
-                        identifier=_data['ID'],
-                        ref=_data['REF'],
-                        alt=_data['ALT'],
-                    )
-                )
-            return vcf_rows
+            return VcfRow(**data)
         else:
             return data
 

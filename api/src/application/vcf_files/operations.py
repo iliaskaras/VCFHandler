@@ -4,7 +4,7 @@ import mimetypes
 from collections import OrderedDict
 from typing import List, Tuple, Union
 
-from application.infrastructure.error.errors import InvalidArgumentError, MultipleVCFHandlerBaseError
+from application.infrastructure.error.errors import InvalidArgumentError, MultipleVCFHandlerBaseError, ValidationError
 from application.rest_api.vcf_files.enums import VCFHeader
 from application.vcf_files.errors import VcfRowsByIdNotExistError, VcfDataAppendError, VcfDataDeleteError, \
     VcfDataUpdateError
@@ -66,21 +66,23 @@ class FilterVcfFile:
         # Use io.StringIO because we do not have the an actual csv file.
         # Read as csv the rows, keep the columns that we are interested in and rename them to map them later on.
         # Query the csv by the ID column (renamed to identifier).
-        df_rows = pd.read_csv(
-            io.StringIO(''.join(rows)),
-            sep='\t',
-            usecols=[header.value for header in headers],
-            dtype={'POS': int},
-        ).rename(
-            columns={
-                '#CHROM': 'chrom',
-                'POS': 'pos',
-                'ID': 'identifier',
-                'REF': 'ref',
-                'ALT': 'alt',
-            }
-        ).query('identifier == \'{0}\''.format(filter_id))
-
+        try:
+            df_rows = pd.read_csv(
+                io.StringIO(''.join(rows)),
+                sep='\t',
+                usecols=[header.value for header in headers],
+                dtype={'POS': int},
+            ).rename(
+                columns={
+                    '#CHROM': 'chrom',
+                    'POS': 'pos',
+                    'ID': 'identifier',
+                    'REF': 'ref',
+                    'ALT': 'alt',
+                }
+            ).query('identifier == \'{0}\''.format(filter_id))
+        except Exception as ex:
+            raise ValidationError(str(ex))
         # Keep the page rows only.
         _from = page_index * page_size
         paginated_df_rows = df_rows[_from:][:page_size]

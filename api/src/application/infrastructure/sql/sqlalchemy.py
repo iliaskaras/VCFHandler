@@ -11,6 +11,7 @@ from application.infrastructure.error.errors import (
     InvalidArgumentError,
     ValidationError,
 )
+from application.infrastructure.logging.loggers import LOGGER
 from application.infrastructure.sql.errors import SQLAlchemyEngineNotInitializedError
 
 
@@ -47,7 +48,7 @@ class SQLAlchemyEngineWrapper:
 
     def __init__(self, uri: str):
         if SQLAlchemyEngineWrapper.__instance is not None:
-            raise ValidationError("SQLAlchemyEngineWrapper is singleton")
+            LOGGER.info("SQLAlchemyEngineWrapper is singleton")
         else:
             # Initialize the Alchemy Engine and sessionmaker
             self.initialize(uri=uri)

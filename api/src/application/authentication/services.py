@@ -35,7 +35,7 @@ class GetAccessTokenService:
         return create_access_token(
             identity=jwt_identity.__dict__,
             expires_delta=timedelta(
-                seconds=self.configuration.jwt_expiration*3
+                seconds=self.configuration.jwt_expiration
             ),
             # Due to authentication, we return a fresh access token.
             fresh=True,
