@@ -72,15 +72,15 @@ class DeleteDataToVcfFile(Resource):
     @map_errors()
     @guard(permission=Permission.execute)
     @map_request(VcfFileDeleteRequestSchema())
-    @map_response(schema=VcfFileDeletedResponseSchema(), status_code=201)
-    def delete(self, file_path: str, filter_id: str) -> Dict[str, Union[int, str]]:
+    @map_response(status_code=204)
+    def delete(self, file_path: str, filter_id: str) -> None:
         """
         Controller for handling removing rows to VCF files.
 
         :param file_path: The VCF filename.
         :param filter_id: The id rows to remove from the VCF file.
 
-        :return: The total number of rows deleted to the VCF file and the file path.
+        :return: Upon successfully deletion, a 404 NO CONTENT response is returned.
         """
 
-        return vcf_file_filter_out_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id)
+        vcf_file_filter_out_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id)
