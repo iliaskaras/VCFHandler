@@ -212,3 +212,89 @@ class FilterOutByIdVcfFile:
             raise VcfDataDeleteError(str(ex))
 
         return total_deleted_rows
+
+
+class UpdateByIdVcfFile:
+
+    def run(
+            self,
+            vcf_file_path: str = None,
+            filter_id: str = None,
+            data: Dict[str, Union[str, int]] = None
+    ) -> int:
+        """
+        Loads and updates a VCF File based on the provided filtered id.
+
+        :param vcf_file_path: The VCF file path to load.
+        :param filter_id: The filter id.
+        :param data: The data to update file by id.
+
+        :return: The list of filtered by ID VcfRows.
+
+        :raise InvalidArgumentError: If there is an invalid argument.
+               VcfDataDeleteError: If there was an error in the data deletion logic.
+        """
+        if not vcf_file_path:
+            raise InvalidArgumentError('The VCF file path is required.')
+        if not filter_id:
+            raise InvalidArgumentError('The filter id is required.')
+        if not data:
+            raise InvalidArgumentError('Data are required.')
+
+        # The second item in the tuple indicates the guessed filetype.
+        # In case of .gz file, the guessed filetype is gzip
+        # In case of .vcf file, the guessed filetype is None
+        file_type: Tuple[Union[None, str], str] = mimetypes.guess_type(vcf_file_path)
+        total_updated_rows = 0
+
+        data['1'] = data.pop('chrom')
+        data['2'] = data.pop('pos')
+        data['3'] = data.pop('identifier')
+        data['4'] = data.pop('ref')
+        data['5'] = data.pop('alt')
+
+        row_to_append = '\t'.join([str(value) for value in OrderedDict(data).values()])+'\t'
+
+        try:
+
+            if file_type[1] == 'gzip':
+                with gzip.open(vcf_file_path, 'r') as file:
+                    rows = []
+                    for row in file:
+                        if row.startswith(b'##') or row.startswith(b'#'):
+                            rows.append(row)
+                            continue
+                        row_id = row.split(b'\t')[2].decode("utf-8")
+                        if row_id != filter_id:
+                            rows.append(row)
+                        else:
+                            columns_to_not_update: bytes = b'\t'.join(row.split(b'\t')[5:])
+                            final_updated_row: bytes = str.encode(row_to_append) + columns_to_not_update
+                            rows.append(final_updated_row)
+                            total_updated_rows += 1
+
+                with gzip.open(vcf_file_path, 'wb') as file:
+                    file.writelines(rows)
+
+            elif file_type[1] is None:
+                with open(vcf_file_path, 'r') as file:
+                    rows = []
+                    for row in file:
+                        if row.startswith('##') or row.startswith('#'):
+                            rows.append(row)
+                            continue
+                        row_id = row.split('\t')[2]
+                        if row_id != filter_id:
+                            rows.append(row)
+                        else:
+                            columns_to_not_update: str = '\t'.join(row.split('\t')[5:])
+                            final_updated_row: str = row_to_append + columns_to_not_update
+                            rows.append(final_updated_row)
+                            total_updated_rows += 1
+
+                with open(vcf_file_path, 'w') as file:
+                    file.writelines(rows)
+        except Exception as ex:
+            raise VcfDataDeleteError(str(ex))
+
+        return total_updated_rows

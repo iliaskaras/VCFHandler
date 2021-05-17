@@ -8,10 +8,11 @@ from application.rest_api.decorators import map_request, map_response, map_error
 from application.rest_api.enums import AcceptHeader
 from application.rest_api.rest_plus import api
 from application.rest_api.vcf_files.schemas import VcfFilePaginationRequestSchema, VcfFilePaginationResponseSchema, \
-    VcfFilePostRequestSchema, VcfFilePostResponseSchema, VcfFileDeleteRequestSchema, VcfFileDeletedResponseSchema
+    VcfFilePostRequestSchema, VcfFilePostResponseSchema, VcfFileDeleteRequestSchema, VcfFileDeletedResponseSchema, \
+    VcfFileUpdateRequestSchema, VcfFileUpdateResponseSchema
 from application.user.enums import Permission
 from application.vcf_files.factories import vcf_file_pagination_service, append_data_to_vcf_file_service, \
-    vcf_file_filter_out_by_id_service
+    vcf_file_filter_out_by_id_service, vcf_file_update_by_id_service
 
 ns = api.namespace(
     "vcf-files", description="VCF files related endpoints."
@@ -60,7 +61,7 @@ class AppendDataToVcfFile(Resource):
         :param file_path: The VCF filename.
         :param data: A list of rows to append to the file.
 
-        :return: The total number of rows appended to the VCF file and the file path.
+        :return: The total number of rows appended to the VCF file.
         """
 
         return append_data_to_vcf_file_service().apply(vcf_file_path=file_path, data=data)
@@ -84,3 +85,29 @@ class DeleteDataToVcfFile(Resource):
         """
 
         vcf_file_filter_out_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id)
+
+
+@ns.route("")
+class UpdateDataToVcfFile(Resource):
+    @accept(AcceptHeader.json.value, AcceptHeader.xml.value, AcceptHeader.all.value)
+    @map_errors()
+    @guard(permission=Permission.execute)
+    @map_request(VcfFileUpdateRequestSchema())
+    @map_response(schema=VcfFileUpdateResponseSchema(), status_code=201)
+    def patch(
+            self,
+            file_path: str,
+            filter_id: str,
+            data: Dict[str, Union[str, int]]
+    ) -> Dict[str, Union[int, str]]:
+        """
+        Controller for handling removing rows to VCF files.
+
+        :param file_path: The VCF filename.
+        :param filter_id: The id rows to remove from the VCF file.
+        :param data: The data to update file by id.
+
+        :return: The total number of rows updated to the VCF file.
+        """
+
+        return vcf_file_update_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id, data=data)

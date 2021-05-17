@@ -16,6 +16,11 @@ class VcfDataDeleteError(ValidationError):
     error_type = "VcfDataDeleteError"
 
 
+class VcfDataUpdateError(ValidationError):
+    message = "Vcf Data Update Error."
+    error_type = "VcfDataUpdateError"
+
+
 class VcfNoDataDeletedError(ValidationError):
     message = "Vcf Data Delete Error."
     error_type = "VcfDataDeleteError"
