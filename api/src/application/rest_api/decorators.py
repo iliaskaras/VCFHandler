@@ -19,7 +19,7 @@ from json2xml import json2xml
 
 from application.rest_api.utils import ETagManager
 from application.vcf_files.errors import VcfRowsByIdNotExistError, VcfDataAppendError, VcfNoDataDeletedError, \
-    VcfDataDeleteError
+    VcfDataDeleteError, VcfDataUpdateError
 
 
 def map_request(schema: Schema) -> Callable:
@@ -174,6 +174,10 @@ def map_errors() -> Callable:
             ),
             BaseToHttpErrorPair(
                 vcf_handler_base_error=VcfNoDataDeletedError(),
+                public_error=NotFoundHttpError(),
+            ),
+            BaseToHttpErrorPair(
+                vcf_handler_base_error=VcfDataUpdateError(),
                 public_error=NotFoundHttpError(),
             ),
         ],

@@ -2,8 +2,9 @@ from typing import List, Dict, Union
 
 from application.infrastructure.error.errors import InvalidArgumentError
 from application.rest_api.vcf_files.enums import VCFHeader
-from application.rest_api.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutByIdVcfFile
-from application.vcf_files.errors import VcfNoDataDeletedError
+from application.rest_api.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutByIdVcfFile, \
+    UpdateByIdVcfFile
+from application.vcf_files.errors import VcfNoDataDeletedError, VcfDataUpdateError
 from application.vcf_files.models import FilteredVcfRowsPage
 
 
@@ -31,6 +32,8 @@ class VcfFilePaginationService:
         :param page_index: The index of the page.
 
         :return: A FilteredVcfRowsPage.
+
+        :raise: InvalidArgumentError: In case an invalid argument is provided.
         """
 
         if not filter_id:
@@ -76,7 +79,9 @@ class AppendDataToVcfFileService:
         :param vcf_file_path: The VCF file path to load.
         :param data: The list of data to append.
 
-        :return: The total number of rows appended to the VCF file and the file path.
+        :return: The total number of rows appended to the VCF file.
+
+        :raise: InvalidArgumentError: In case an invalid argument is provided.
         """
         if not vcf_file_path:
             raise InvalidArgumentError('The VCF file path is required.')
@@ -130,3 +135,48 @@ class FilterOutByIdVcfFileService:
             raise VcfNoDataDeletedError("No data found for deletion")
 
 
+class VcfFileUpdateByIdService:
+
+    def __init__(
+            self,
+            update_by_id_vcf_file: UpdateByIdVcfFile,
+    ):
+        self.update_by_id_vcf_file = update_by_id_vcf_file
+
+    def apply(
+            self,
+            vcf_file_path: str,
+            filter_id: str,
+            data: Dict[str, Union[str, int]] = None
+    ) -> Dict[str, Union[int, str]]:
+        """
+        VCF File update Service.
+
+        :param vcf_file_path: The VCF file path to load.
+        :param filter_id: The filter id.
+        :param data: The data to update file by id.
+
+        :return: The total number of rows updated to the VCF file.
+
+        :raise: InvalidArgumentError: In case an invalid argument is provided.
+        """
+        if not vcf_file_path:
+            raise InvalidArgumentError('The VCF file path is required.')
+        if not filter_id:
+            raise InvalidArgumentError('The Filter ID is required.')
+        if not data:
+            raise InvalidArgumentError('Data are required.')
+
+        updated_rows = self.update_by_id_vcf_file.run(
+            vcf_file_path=vcf_file_path,
+            filter_id=filter_id,
+            data=data
+        )
+
+        if updated_rows == 0:
+            raise VcfDataUpdateError("No data found for update")
+
+        return {
+            "total_rows_updated": updated_rows,
+            "file_path": vcf_file_path,
+        }
