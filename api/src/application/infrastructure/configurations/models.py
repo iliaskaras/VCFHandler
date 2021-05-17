@@ -15,8 +15,8 @@ class Configuration:
     The Application global Configuration Instance. It is used throughout the application and
     is initialized at the Application initialization.
 
-    @:var ENVIRONMENT: Holds the Environment ENUM.
-    @:var INSTANCE: Holds the initialized Configuration instance.
+    :var ENVIRONMENT: Holds the Environment ENUM.
+    :var INSTANCE: Holds the initialized Configuration instance.
     """
 
     ENVIRONMENT: Environment = None
@@ -52,7 +52,7 @@ class Configuration:
         """
         Initializes the Configuration on the environment specified at 'VCF_FILES_API_ENVIRONMENT' environment variable.
 
-        @:return The Configuration instance.
+        :return The Configuration instance.
         """
 
         environment: str = os.getenv(ENV_VAR_NAME, None)
@@ -72,9 +72,9 @@ class Configuration:
         """
         Sets the Configuration instance.
 
-        @:param environment: The Application environment.
+        :param environment: The Application environment.
 
-        @:return: The configuration instance.
+        :return: The configuration instance.
         """
 
         if environment == Environment.local:
@@ -91,9 +91,9 @@ class Configuration:
         """
         Returns the initialized configuration instance.
 
-        @:return: The initialized configuration instance.
+        :return: The initialized configuration instance.
 
-        @:raise ConfigurationNotInitializedError: If the configuration has not been initialized.
+        :raise ConfigurationNotInitializedError: If the configuration has not been initialized.
         """
 
         if not Configuration.INSTANCE:

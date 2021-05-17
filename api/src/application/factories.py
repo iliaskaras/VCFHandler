@@ -22,7 +22,7 @@ def vcf_handler_api(name: str) -> Flask:
     The Flask Application Factory for the VCF Handler API.
     Initializes and returns the VCF Handler Flask application.
 
-    @:param name: The name of the Flask application.
+    :param name: The name of the Flask application.
 
     @return: The VCF Handler Flask application.
     """

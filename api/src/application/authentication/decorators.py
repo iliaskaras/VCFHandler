@@ -11,7 +11,7 @@ def guard(permission: Permission = None) -> Callable:
     """
     A guard decorator to filter requests from unauthorized clients.
 
-    @:param permission: The permission that guard the endpoint.
+    :param permission: The permission that guard the endpoint.
     """
     def decorator(func: Callable) -> Callable:
 

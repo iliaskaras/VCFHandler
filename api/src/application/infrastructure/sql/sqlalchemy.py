@@ -58,11 +58,11 @@ class SQLAlchemyEngineWrapper:
         """
         Initializes the SQLAlchemy Engine.
 
-        @:param uri: The URI of the database to connect to.
+        :param uri: The URI of the database to connect to.
 
-        @:return: The Engine instance.
+        :return: The Engine instance.
 
-        @:raise InvalidArgumentError: If the URI is not provided.
+        :raise InvalidArgumentError: If the URI is not provided.
         """
 
         if not uri:
@@ -81,9 +81,9 @@ class SQLAlchemyEngineWrapper:
         """
         Returns the SQLAlchemy Engine.
 
-        @:return: The SQLAlchemy Engine instance.
+        :return: The SQLAlchemy Engine instance.
 
-        @:raise SQLAlchemyEngineNotInitializedError: If the engine failed to be created at the constructor.
+        :raise SQLAlchemyEngineNotInitializedError: If the engine failed to be created at the constructor.
         """
 
         if not cls.SQL_ALCHEMY_ENGINE:
@@ -98,9 +98,9 @@ class SQLAlchemyEngineWrapper:
         """
         Initializes the SQLAlchemy Session instance.
 
-        @:return: The SQLAlchemy Session instance created.
+        :return: The SQLAlchemy Session instance created.
 
-        @:raise SQLAlchemyEngineNotInitializedError: If `initialize` has not been called before calling this method.
+        :raise SQLAlchemyEngineNotInitializedError: If `initialize` has not been called before calling this method.
         """
 
         if not cls.SQL_ALCHEMY_ENGINE or not cls.SQL_ALCHEMY_SESSION_MAKER:
@@ -134,8 +134,8 @@ class SQLAlchemySessionWrapper:
         """
         ContextManager that provides an SQLAlchemy Session on an SQL database.
 
-        @:param sql_alchemy_engine_wrapper: The SQLAlchemyEngineWrapper instance to use for generating the Session.
-        @:param commit_on_exit: Whether to commit the session on exit.
+        :param sql_alchemy_engine_wrapper: The SQLAlchemyEngineWrapper instance to use for generating the Session.
+        :param commit_on_exit: Whether to commit the session on exit.
         """
 
         self.sql_alchemy_engine_wrapper = sql_alchemy_engine_wrapper
