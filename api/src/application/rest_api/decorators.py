@@ -3,6 +3,7 @@ from typing import Any, Callable, List
 
 import flask
 from flask import Response, make_response, request
+from flask_jwt_extended.exceptions import NoAuthorizationError
 from json2xml.utils import readfromstring
 from marshmallow import Schema
 from webargs.flaskparser import use_kwargs
@@ -12,12 +13,12 @@ from application.authentication.errors import AuthorizationError, Authentication
 from application.infrastructure.error.errors import VCFHandlerBaseError, MultipleVCFHandlerBaseError, ArgumentError
 from application.rest_api.enums import AcceptHeader
 from application.rest_api.errors import NotFoundHttpError, BadRequestHttpError, \
-    AuthenticationHttpError, InternalServerHttpError, Error
+    AuthenticationHttpError, InternalServerHttpError, Error, AuthorizationHttpError
 from application.rest_api.models import BaseToHttpErrorPair
 from json2xml import json2xml
 
 from application.rest_api.utils import ETagManager
-from application.vcf_files.errors import VcfRowsByIdNotExistError
+from application.vcf_files.errors import VcfRowsByIdNotExistError, VcfDataAppendError
 
 
 def map_request(schema: Schema) -> Callable:
@@ -158,6 +159,14 @@ def map_errors() -> Callable:
                 vcf_handler_base_error=VcfRowsByIdNotExistError(),
                 public_error=NotFoundHttpError(),
             ),
+            BaseToHttpErrorPair(
+                vcf_handler_base_error=AuthorizationError(),
+                public_error=AuthorizationHttpError(),
+            ),
+            BaseToHttpErrorPair(
+                vcf_handler_base_error=VcfDataAppendError(),
+                public_error=InternalServerHttpError(),
+            ),
         ],
     )
 
@@ -214,6 +223,8 @@ def map_base_errors_to_public(
 
                 # In case we haven't mapped the Base Exception to any Public Error.
                 raise InternalServerHttpError()
+            except NoAuthorizationError as ex:
+                raise AuthorizationHttpError([Error(message=str(ex.args[0]), error_type=403)])
             except Exception:
                 raise InternalServerHttpError()
 

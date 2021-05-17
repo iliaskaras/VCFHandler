@@ -1,6 +1,8 @@
+from typing import List, Dict, Union
+
 from application.infrastructure.error.errors import InvalidArgumentError
 from application.rest_api.vcf_files.enums import VCFHeader
-from application.rest_api.vcf_files.operations import FilterVcfFile
+from application.rest_api.vcf_files.operations import FilterVcfFile, AppendToVcfFile
 from application.vcf_files.models import FilteredVcfRowsPage
 
 
@@ -52,3 +54,40 @@ class VcfFilePaginationService:
             filtered_id=filter_id,
             results=vcf_filtered_rows
         )
+
+
+class AppendDataToVcfFileService:
+
+    def __init__(
+            self,
+            append_to_vcf_file: AppendToVcfFile,
+    ):
+        self.append_to_vcf_file = append_to_vcf_file
+
+    def apply(
+            self,
+            vcf_file_path: str,
+            data: List[Dict[str, Union[str, int]]] = None
+    ) -> Dict[str, Union[int, str]]:
+        """
+        Handles data appending on a VCF File.
+
+        @:param vcf_file_path: The VCF file path to load.
+        @:param data: The list of data to append.
+
+        @:return: A FilteredVcfRowsPage.
+        """
+        if not vcf_file_path:
+            raise InvalidArgumentError('The VCF file path is required.')
+        if not data:
+            raise InvalidArgumentError('At least one row of data is required.')
+
+        total_rows_added: int = self.append_to_vcf_file.run(
+            vcf_file_path=vcf_file_path,
+            data=data
+        )
+
+        return {
+            "total_rows_added": total_rows_added,
+            "file_path": vcf_file_path,
+        }

@@ -1,11 +1,12 @@
 import gzip
 import io
 import mimetypes
-from typing import List, Tuple, Union
+from collections import OrderedDict
+from typing import List, Tuple, Union, Dict
 
 from application.infrastructure.error.errors import InvalidArgumentError
 from application.rest_api.vcf_files.enums import VCFHeader
-from application.vcf_files.errors import VcfRowsByIdNotExistError
+from application.vcf_files.errors import VcfRowsByIdNotExistError, VcfDataAppendError
 from application.vcf_files.models import VcfRow
 import pandas as pd
 
@@ -89,3 +90,57 @@ class FilterVcfFile:
             raise VcfRowsByIdNotExistError('None rows found in VCF by the provided id:{}'.format(filter_id))
 
         return vcf_rows
+
+
+class AppendToVcfFile:
+
+    def run(
+            self,
+            vcf_file_path: str = None,
+            data: List[Dict[str, Union[str, int]]] = None
+    ) -> int:
+        """
+        Loads and filters a VCF File based on the provided filtered id.
+
+        @:param vcf_file_path: The VCF file path to load.
+        @:param data: The list of data to append.
+
+        @:return: The total number of appended data rows.
+
+        @:raise InvalidArgumentError: If there is an invalid argument.
+                VcfDataAppendError: If was an error appending data to the VCF file.
+        """
+        if not vcf_file_path:
+            raise InvalidArgumentError('The VCF file path is required.')
+        if not data:
+            raise InvalidArgumentError('At least one row of data is required.')
+
+        # The second item in the tuple indicates the guessed filetype.
+        # In case of .gz file, the guessed filetype is gzip
+        # In case of .vcf file, the guessed filetype is None
+        file_type: Tuple[Union[None, str], str] = mimetypes.guess_type(vcf_file_path)
+
+        rows_to_add: List[str] = []
+
+        for _data in data:
+            _data['1'] = _data.pop('chrom')
+            _data['2'] = _data.pop('pos')
+            _data['3'] = _data.pop('identifier')
+            _data['4'] = _data.pop('ref')
+            _data['5'] = _data.pop('alt')
+
+            rows_to_add.append('\t'.join([str(value) for value in OrderedDict(_data).values()])+'\n')
+
+        try:
+            if file_type[1] == 'gzip':
+                with gzip.open(vcf_file_path, 'a') as file:
+                    for row in rows_to_add:
+                        file.write(row)
+            elif file_type[1] is None:
+                with open(vcf_file_path, 'a') as file:
+                    for row in rows_to_add:
+                        file.write(row)
+        except Exception as ex:
+            raise VcfDataAppendError(str(ex))
+
+        return len(data)
