@@ -4,9 +4,10 @@ import mimetypes
 from collections import OrderedDict
 from typing import List, Tuple, Union
 
-from application.infrastructure.error.errors import InvalidArgumentError
+from application.infrastructure.error.errors import InvalidArgumentError, MultipleVCFHandlerBaseError
 from application.rest_api.vcf_files.enums import VCFHeader
-from application.vcf_files.errors import VcfRowsByIdNotExistError, VcfDataAppendError, VcfDataDeleteError
+from application.vcf_files.errors import VcfRowsByIdNotExistError, VcfDataAppendError, VcfDataDeleteError, \
+    VcfDataUpdateError
 from application.vcf_files.models import VcfRow
 import pandas as pd
 
@@ -35,14 +36,20 @@ class FilterVcfFile:
         :raise InvalidArgumentError: If there is an invalid argument.
                 VcfRowsByIdNotExistError: If there aren't any rows filtered by the provided filter id.
         """
+        errors: MultipleVCFHandlerBaseError = MultipleVCFHandlerBaseError()
         if not vcf_file_path:
-            raise InvalidArgumentError('The VCF file path is required.')
+            errors.append(InvalidArgumentError('The VCF file path is required.'))
+        if not filter_id:
+            errors.append(InvalidArgumentError('The Filter ID is required.'))
         if not headers:
-            raise InvalidArgumentError('At least one VCF header is required.')
-        if page_size <= 0:
-            raise InvalidArgumentError('The page size is required.')
-        if page_index < 0:
-            raise InvalidArgumentError('The page index is required.')
+            errors.append(InvalidArgumentError('At least one VCF header is required.'))
+        if page_size is None or page_size <= 0:
+            errors.append(InvalidArgumentError('A page size above 0 is required.'))
+        if page_index is None or page_index < 0:
+            errors.append(InvalidArgumentError('A page index above or equal to zero is required.'))
+
+        if errors.errors:
+            raise errors
 
         # The second item in the tuple indicates the guessed filetype.
         # In case of .gz file, the guessed filetype is gzip
@@ -110,10 +117,14 @@ class AppendToVcfFile:
         :raise InvalidArgumentError: If there is an invalid argument.
                 VcfDataAppendError: If was an error appending data to the VCF file.
         """
+        errors: MultipleVCFHandlerBaseError = MultipleVCFHandlerBaseError()
         if not vcf_file_path:
-            raise InvalidArgumentError('The VCF file path is required.')
+            errors.append(InvalidArgumentError('The VCF file path is required.'))
         if not vcf_rows:
-            raise InvalidArgumentError('At least one row of data is required.')
+            errors.append(InvalidArgumentError('At least one row of data is required.'))
+
+        if errors.errors:
+            raise errors
 
         # The second item in the tuple indicates the guessed filetype.
         # In case of .gz file, the guessed filetype is gzip
@@ -165,10 +176,14 @@ class FilterOutRowsById:
         :raise InvalidArgumentError: If there is an invalid argument.
                VcfDataDeleteError: If there was an error in the data deletion logic.
         """
+        errors: MultipleVCFHandlerBaseError = MultipleVCFHandlerBaseError()
         if not vcf_file_path:
-            raise InvalidArgumentError('The VCF file path is required.')
+            errors.append(InvalidArgumentError('The VCF file path is required.'))
         if not filter_id:
-            raise InvalidArgumentError('The filter id is required.')
+            errors.append(InvalidArgumentError('The filter id is required.'))
+
+        if errors.errors:
+            raise errors
 
         # The second item in the tuple indicates the guessed filetype.
         # In case of .gz file, the guessed filetype is gzip
@@ -235,12 +250,16 @@ class UpdateByIdVcfFile:
         :raise InvalidArgumentError: If there is an invalid argument.
                VcfDataDeleteError: If there was an error in the data deletion logic.
         """
+        errors: MultipleVCFHandlerBaseError = MultipleVCFHandlerBaseError()
         if not vcf_file_path:
-            raise InvalidArgumentError('The VCF file path is required.')
+            errors.append(InvalidArgumentError('The VCF file path is required.'))
         if not filter_id:
-            raise InvalidArgumentError('The filter id is required.')
+            errors.append(InvalidArgumentError('The filter id is required.'))
         if not data:
-            raise InvalidArgumentError('Data are required.')
+            errors.append(InvalidArgumentError('Data are required.'))
+
+        if errors.errors:
+            raise errors
 
         # The second item in the tuple indicates the guessed filetype.
         # In case of .gz file, the guessed filetype is gzip
@@ -298,6 +317,6 @@ class UpdateByIdVcfFile:
                 with open(vcf_file_path, 'w') as file:
                     file.writelines(rows)
         except Exception as ex:
-            raise VcfDataDeleteError(str(ex))
+            raise VcfDataUpdateError(str(ex))
 
         return total_updated_rows

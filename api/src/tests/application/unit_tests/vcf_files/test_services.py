@@ -1,6 +1,6 @@
 import pytest
-from typing import Optional, Type, List, Dict, Union
-from unittest.mock import MagicMock, call
+from typing import Optional, List, Dict, Union
+from unittest.mock import MagicMock
 
 from application.infrastructure.error.errors import InvalidArgumentError, MultipleVCFHandlerBaseError, \
     VCFHandlerBaseError
