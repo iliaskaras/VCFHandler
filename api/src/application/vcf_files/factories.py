@@ -1,4 +1,4 @@
-from application.rest_api.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutRowsById, \
+from application.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutRowsById, \
     UpdateByIdVcfFile
 from application.vcf_files.services import VcfFilePaginationService, AppendDataToVcfFileService, \
     FilterOutRowsByIdService, VcfFileUpdateByIdService

@@ -1,8 +1,8 @@
-from typing import List, Dict, Union
+from typing import List
 
 from application.infrastructure.error.errors import InvalidArgumentError, MultipleVCFHandlerBaseError
 from application.rest_api.vcf_files.enums import VCFHeader
-from application.rest_api.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutRowsById, \
+from application.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutRowsById, \
     UpdateByIdVcfFile
 from application.vcf_files.errors import VcfNoDataDeletedError, VcfDataUpdateError
 from application.vcf_files.models import FilteredVcfRowsPage, VcfRow, AppendRowsExecutionArtifact, \
