@@ -31,7 +31,7 @@ class PostVcfRowSchema(Schema):
     )
 
     @post_load
-    def load(self, data, **kwargs):
+    def load_vcf_row(self, data, **kwargs):
         vcf_rows: List[VcfRow] = []
         if isinstance(data, dict):
             return VcfRow(
