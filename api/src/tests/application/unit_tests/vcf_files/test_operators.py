@@ -4,19 +4,15 @@ import os
 from unittest import mock
 
 import pytest
-from typing import Optional, List, Dict, Union
-from unittest.mock import MagicMock
+from typing import Optional, List
 
 from application.infrastructure.error.errors import InvalidArgumentError, MultipleVCFHandlerBaseError, \
     VCFHandlerBaseError
 from application.rest_api.vcf_files.enums import VCFHeader
-from application.vcf_files.errors import VcfNoDataDeletedError, VcfDataUpdateError, VcfDataDeleteError, \
+from application.vcf_files.errors import VcfDataUpdateError, VcfDataDeleteError, \
     VcfRowsByIdNotExistError, VcfDataAppendError
-from application.vcf_files.models import VcfRow, FilteredVcfRowsPage, AppendRowsExecutionArtifact, \
-    UpdatedRowsExecutionArtifact
+from application.vcf_files.models import VcfRow
 from application.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutRowsById, UpdateByIdVcfFile
-from application.vcf_files.services import VcfFilePaginationService, AppendDataToVcfFileService, \
-    FilterOutRowsByIdService, VcfFileUpdateByIdService
 
 
 @pytest.fixture
