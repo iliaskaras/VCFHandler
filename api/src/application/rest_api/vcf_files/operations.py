@@ -135,7 +135,7 @@ class AppendToVcfFile:
             if file_type[1] == 'gzip':
                 with gzip.open(vcf_file_path, 'a') as file:
                     for row in rows_to_add:
-                        file.write(row)
+                        file.write(str.encode(row))
             elif file_type[1] is None:
                 with open(vcf_file_path, 'a') as file:
                     for row in rows_to_add:
