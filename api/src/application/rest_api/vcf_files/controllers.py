@@ -8,11 +8,12 @@ from application.rest_api.decorators import map_request, map_response, map_error
 from application.rest_api.enums import AcceptHeader
 from application.rest_api.rest_plus import api
 from application.rest_api.vcf_files.schemas import VcfFilePaginationRequestSchema, VcfFilePaginationResponseSchema, \
-    VcfFilePostRequestSchema, VcfFilePostResponseSchema, VcfFileDeleteRequestSchema, VcfFileDeletedResponseSchema, \
-    VcfFileUpdateRequestSchema, VcfFileUpdateResponseSchema
+    VcfFilePostRequestSchema, VcfFilePostResponseSchema, VcfFileDeleteRequestSchema, VcfFileUpdateRequestSchema, \
+    VcfFileUpdateResponseSchema
 from application.user.enums import Permission
 from application.vcf_files.factories import vcf_file_pagination_service, append_data_to_vcf_file_service, \
-    vcf_file_filter_out_by_id_service, vcf_file_update_by_id_service
+    filter_out_rows_by_id_service, vcf_file_update_by_id_service
+from application.vcf_files.models import AppendRowsExecutionArtifact, VcfRow, UpdatedRowsExecutionArtifact
 
 ns = api.namespace(
     "vcf-files", description="VCF files related endpoints."
@@ -54,17 +55,17 @@ class AppendDataToVcfFile(Resource):
     @guard(permission=Permission.execute)
     @map_request(VcfFilePostRequestSchema())
     @map_response(schema=VcfFilePostResponseSchema(), status_code=201)
-    def post(self, file_path: str, data: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[int, str]]:
+    def post(self, file_path: str, data: List[VcfRow]) -> AppendRowsExecutionArtifact:
         """
         Controller for handling appending rows to VCF files.
 
         :param file_path: The VCF filename.
         :param data: A list of rows to append to the file.
 
-        :return: The total number of rows appended to the VCF file.
+        :return: The VCF file rows append execution artifact.
         """
 
-        return append_data_to_vcf_file_service().apply(vcf_file_path=file_path, data=data)
+        return append_data_to_vcf_file_service().apply(vcf_file_path=file_path, vcf_rows=data)
 
 
 @ns.route("")
@@ -84,7 +85,7 @@ class DeleteDataToVcfFile(Resource):
         :return: Upon successfully deletion, a 204 NO CONTENT response is returned.
         """
 
-        vcf_file_filter_out_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id)
+        filter_out_rows_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id)
 
 
 @ns.route("")
@@ -98,8 +99,8 @@ class UpdateDataToVcfFile(Resource):
             self,
             file_path: str,
             filter_id: str,
-            data: Dict[str, Union[str, int]]
-    ) -> Dict[str, Union[int, str]]:
+            data: VcfRow
+    ) -> UpdatedRowsExecutionArtifact:
         """
         Controller for handling removing rows to VCF files.
 
@@ -107,7 +108,7 @@ class UpdateDataToVcfFile(Resource):
         :param filter_id: The id rows to remove from the VCF file.
         :param data: The data to update file by id.
 
-        :return: The total number of rows updated to the VCF file.
+        :return: The VCF file rows update execution artifact.
         """
 
         return vcf_file_update_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id, data=data)

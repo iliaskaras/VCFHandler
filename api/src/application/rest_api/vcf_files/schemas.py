@@ -1,7 +1,10 @@
 import re
+from typing import List
 
-from marshmallow import fields, validate
+from marshmallow import fields, validate, post_load
 from marshmallow.schema import BaseSchema, Schema
+
+from application.vcf_files.models import VcfRow
 
 
 class PostVcfRowSchema(Schema):
@@ -26,6 +29,32 @@ class PostVcfRowSchema(Schema):
         required=True,
         validate=validate.Regexp(regex=re.compile("^([ACGT.]$)"))
     )
+
+    @post_load
+    def load(self, data, **kwargs):
+        vcf_rows: List[VcfRow] = []
+        if isinstance(data, dict):
+            return VcfRow(
+                chrom=data['CHROM'],
+                pos=data['POS'],
+                identifier=data['ID'],
+                ref=data['REF'],
+                alt=data['ALT'],
+            )
+        elif isinstance(data, List):
+            for _data in data:
+                vcf_rows.append(
+                    VcfRow(
+                        chrom=_data['CHROM'],
+                        pos=_data['POS'],
+                        identifier=_data['ID'],
+                        ref=_data['REF'],
+                        alt=_data['ALT'],
+                    )
+                )
+            return vcf_rows
+        else:
+            return data
 
 
 class VcfFilePostRequestSchema(BaseSchema):

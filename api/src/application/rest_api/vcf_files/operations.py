@@ -2,7 +2,7 @@ import gzip
 import io
 import mimetypes
 from collections import OrderedDict
-from typing import List, Tuple, Union, Dict
+from typing import List, Tuple, Union
 
 from application.infrastructure.error.errors import InvalidArgumentError
 from application.rest_api.vcf_files.enums import VCFHeader
@@ -97,13 +97,13 @@ class AppendToVcfFile:
     def run(
             self,
             vcf_file_path: str = None,
-            data: List[Dict[str, Union[str, int]]] = None
+            vcf_rows: List[VcfRow] = None
     ) -> int:
         """
         Loads and filters a VCF File based on the provided filtered id.
 
         :param vcf_file_path: The VCF file path to load.
-        :param data: The list of data to append.
+        :param vcf_rows: The list of VcfRows to append.
 
         :return: The total number of appended data rows.
 
@@ -112,7 +112,7 @@ class AppendToVcfFile:
         """
         if not vcf_file_path:
             raise InvalidArgumentError('The VCF file path is required.')
-        if not data:
+        if not vcf_rows:
             raise InvalidArgumentError('At least one row of data is required.')
 
         # The second item in the tuple indicates the guessed filetype.
@@ -122,14 +122,15 @@ class AppendToVcfFile:
 
         rows_to_add: List[str] = []
 
-        for _data in data:
-            _data['1'] = _data.pop('chrom')
-            _data['2'] = _data.pop('pos')
-            _data['3'] = _data.pop('identifier')
-            _data['4'] = _data.pop('ref')
-            _data['5'] = _data.pop('alt')
+        for vcf_row in vcf_rows:
+            vcf_row_dict: dict = vcf_row.__dict__
+            vcf_row_dict['1'] = vcf_row_dict.pop('chrom')
+            vcf_row_dict['2'] = vcf_row_dict.pop('pos')
+            vcf_row_dict['3'] = vcf_row_dict.pop('identifier')
+            vcf_row_dict['4'] = vcf_row_dict.pop('ref')
+            vcf_row_dict['5'] = vcf_row_dict.pop('alt')
 
-            rows_to_add.append('\t'.join([str(value) for value in OrderedDict(_data).values()]) + '\n')
+            rows_to_add.append('\t'.join([str(value) for value in OrderedDict(vcf_row_dict).values()]) + '\n')
 
         try:
             if file_type[1] == 'gzip':
@@ -143,10 +144,10 @@ class AppendToVcfFile:
         except Exception as ex:
             raise VcfDataAppendError(str(ex))
 
-        return len(data)
+        return len(vcf_rows)
 
 
-class FilterOutByIdVcfFile:
+class FilterOutRowsById:
 
     def run(
             self,
@@ -220,7 +221,7 @@ class UpdateByIdVcfFile:
             self,
             vcf_file_path: str = None,
             filter_id: str = None,
-            data: Dict[str, Union[str, int]] = None
+            data: VcfRow = None
     ) -> int:
         """
         Loads and updates a VCF File based on the provided filtered id.
@@ -247,13 +248,15 @@ class UpdateByIdVcfFile:
         file_type: Tuple[Union[None, str], str] = mimetypes.guess_type(vcf_file_path)
         total_updated_rows = 0
 
-        data['1'] = data.pop('chrom')
-        data['2'] = data.pop('pos')
-        data['3'] = data.pop('identifier')
-        data['4'] = data.pop('ref')
-        data['5'] = data.pop('alt')
+        vcf_row_dict: dict = data.__dict__
 
-        row_to_append = '\t'.join([str(value) for value in OrderedDict(data).values()])+'\t'
+        vcf_row_dict['1'] = vcf_row_dict.pop('chrom')
+        vcf_row_dict['2'] = vcf_row_dict.pop('pos')
+        vcf_row_dict['3'] = vcf_row_dict.pop('identifier')
+        vcf_row_dict['4'] = vcf_row_dict.pop('ref')
+        vcf_row_dict['5'] = vcf_row_dict.pop('alt')
+
+        row_to_append = '\t'.join([str(value) for value in OrderedDict(vcf_row_dict).values()])+'\t'
 
         try:
 
