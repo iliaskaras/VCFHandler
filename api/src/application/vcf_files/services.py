@@ -3,6 +3,7 @@ from typing import List, Dict, Union
 from application.infrastructure.error.errors import InvalidArgumentError
 from application.rest_api.vcf_files.enums import VCFHeader
 from application.rest_api.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutByIdVcfFile
+from application.vcf_files.errors import VcfNoDataDeletedError
 from application.vcf_files.models import FilteredVcfRowsPage
 
 
@@ -113,14 +114,19 @@ class FilterOutByIdVcfFileService:
         :param filter_id: The filter id.
 
         :raise: InvalidArgumentError: In case an invalid argument is provided.
+                VcfNoDataDeletedError: In case no data were found to delete.
         """
         if not vcf_file_path:
             raise InvalidArgumentError('The VCF file path is required.')
         if not filter_id:
             raise InvalidArgumentError('The Filter ID is required.')
 
-        self.filter_out_by_id_vcf_file.run(
+        deleted_rows: int = self.filter_out_by_id_vcf_file.run(
             vcf_file_path=vcf_file_path,
             filter_id=filter_id,
         )
+
+        if deleted_rows == 0:
+            raise VcfNoDataDeletedError("No data found for deletion")
+
 

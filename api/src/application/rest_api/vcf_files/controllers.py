@@ -80,7 +80,7 @@ class DeleteDataToVcfFile(Resource):
         :param file_path: The VCF filename.
         :param filter_id: The id rows to remove from the VCF file.
 
-        :return: Upon successfully deletion, a 404 NO CONTENT response is returned.
+        :return: Upon successfully deletion, a 204 NO CONTENT response is returned.
         """
 
         vcf_file_filter_out_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id)
