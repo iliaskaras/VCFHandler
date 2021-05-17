@@ -7,9 +7,9 @@ def configure_application_logger(name: str) -> Logger:
     """
     Configuration of the application stderr channel logs.
 
-    @:param name: Logger name.
+    :param name: Logger name.
 
-    @:return: The application Logger.
+    :return: The application Logger.
     """
 
     logger = logging.getLogger(name)

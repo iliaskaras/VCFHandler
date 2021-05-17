@@ -13,11 +13,11 @@ class UserRepository:
         """
         Retrieves a User that belongs to the specified User by email.
 
-        @:param email: The email of the User.
+        :param email: The email of the User.
 
-        @:return: The User or None if the User does not exist.
+        :return: The User or None if the User does not exist.
 
-        @:raise InvalidArgumentError: If email is None.
+        :raise InvalidArgumentError: If email is None.
         """
 
         if not email:

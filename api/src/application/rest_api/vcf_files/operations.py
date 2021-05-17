@@ -4,6 +4,7 @@ import mimetypes
 from collections import OrderedDict
 from typing import List, Tuple, Union, Dict
 
+
 from application.infrastructure.error.errors import InvalidArgumentError
 from application.rest_api.vcf_files.enums import VCFHeader
 from application.vcf_files.errors import VcfRowsByIdNotExistError, VcfDataAppendError
@@ -24,15 +25,15 @@ class FilterVcfFile:
         """
         Loads and filters a VCF File based on the provided filtered id.
 
-        @:param vcf_file_path: The VCF file path to load.
-        @:param headers: The VCF file headers to load.
-        @:param filter_id: The source node.
-        @:param page_size: The size of the page.
-        @:param page_index: The index of the page.
+        :param vcf_file_path: The VCF file path to load.
+        :param headers: The VCF file headers to load.
+        :param filter_id: The filter id.
+        :param page_size: The size of the page.
+        :param page_index: The index of the page.
 
-        @:return: The list of filtered by ID VcfRows.
+        :return: The list of filtered by ID VcfRows.
 
-        @:raise InvalidArgumentError: If there is an invalid argument.
+        :raise InvalidArgumentError: If there is an invalid argument.
                 VcfRowsByIdNotExistError: If there aren't any rows filtered by the provided filter id.
         """
         if not vcf_file_path:
@@ -102,12 +103,12 @@ class AppendToVcfFile:
         """
         Loads and filters a VCF File based on the provided filtered id.
 
-        @:param vcf_file_path: The VCF file path to load.
-        @:param data: The list of data to append.
+        :param vcf_file_path: The VCF file path to load.
+        :param data: The list of data to append.
 
-        @:return: The total number of appended data rows.
+        :return: The total number of appended data rows.
 
-        @:raise InvalidArgumentError: If there is an invalid argument.
+        :raise InvalidArgumentError: If there is an invalid argument.
                 VcfDataAppendError: If was an error appending data to the VCF file.
         """
         if not vcf_file_path:
@@ -144,3 +145,69 @@ class AppendToVcfFile:
             raise VcfDataAppendError(str(ex))
 
         return len(data)
+
+
+class FilterOutByIdVcfFile:
+
+    def run(
+            self,
+            vcf_file_path: str = None,
+            filter_id: str = None,
+    ) -> int:
+        """
+        Loads and filters a VCF File based on the provided filtered id.
+
+        :param vcf_file_path: The VCF file path to load.
+        :param filter_id: The filter id.
+        :param page_size: The size of the page.
+        :param page_index: The index of the page.
+
+        :return: The list of filtered by ID VcfRows.
+
+        :raise InvalidArgumentError: If there is an invalid argument.
+                VcfRowsByIdNotExistError: If there aren't any rows filtered by the provided filter id.
+        """
+        if not vcf_file_path:
+            raise InvalidArgumentError('The VCF file path is required.')
+        if not filter_id:
+            raise InvalidArgumentError('The filter id is required.')
+
+        # The second item in the tuple indicates the guessed filetype.
+        # In case of .gz file, the guessed filetype is gzip
+        # In case of .vcf file, the guessed filetype is None
+        file_type: Tuple[Union[None, str], str] = mimetypes.guess_type(vcf_file_path)
+        total_deleted_rows = 0
+
+        if file_type[1] == 'gzip':
+            with gzip.open(vcf_file_path, 'r') as file:
+                rows = []
+                for row in file:
+                    if row.startswith(b'##') or row.startswith(b'#'):
+                        rows.append(row)
+                        continue
+                    row_id = row.split(b'\t')[2].decode("utf-8")
+                    if row_id != filter_id:
+                        rows.append(row)
+                    else:
+                        total_deleted_rows += 1
+
+            with gzip.open(vcf_file_path, 'wb') as file:
+                file.writelines(rows)
+
+        elif file_type[1] is None:
+            with open(vcf_file_path, 'r') as file:
+                rows = []
+                for row in file:
+                    if row.startswith('##') or row.startswith('#'):
+                        rows.append(row)
+                        continue
+                    row_id = row.split('\t')[2]
+                    if row_id != filter_id:
+                        rows.append(row)
+                    else:
+                        total_deleted_rows += 1
+
+            with open(vcf_file_path, 'w') as file:
+                file.writelines(rows)
+
+        return total_deleted_rows
