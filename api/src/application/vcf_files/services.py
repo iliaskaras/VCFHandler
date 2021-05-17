@@ -1,11 +1,12 @@
-from typing import List, Dict, Union
+from typing import List
 
-from application.infrastructure.error.errors import InvalidArgumentError
+from application.infrastructure.error.errors import InvalidArgumentError, MultipleVCFHandlerBaseError
 from application.rest_api.vcf_files.enums import VCFHeader
-from application.rest_api.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutByIdVcfFile, \
+from application.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutRowsById, \
     UpdateByIdVcfFile
 from application.vcf_files.errors import VcfNoDataDeletedError, VcfDataUpdateError
-from application.vcf_files.models import FilteredVcfRowsPage
+from application.vcf_files.models import FilteredVcfRowsPage, VcfRow, AppendRowsExecutionArtifact, \
+    UpdatedRowsExecutionArtifact
 
 
 class VcfFilePaginationService:
@@ -35,15 +36,20 @@ class VcfFilePaginationService:
 
         :raise: InvalidArgumentError: In case an invalid argument is provided.
         """
-
+        errors: MultipleVCFHandlerBaseError = MultipleVCFHandlerBaseError()
+        if not vcf_file_path:
+            errors.append(InvalidArgumentError('The VCF file path is required.'))
         if not filter_id:
-            raise InvalidArgumentError('The Filter ID is required.')
-        if page_size <= 0:
-            raise InvalidArgumentError('The page size is required.')
-        if page_index < 0:
-            raise InvalidArgumentError('The page index is required.')
+            errors.append(InvalidArgumentError('The Filter ID is required.'))
+        if page_size is None or page_size <= 0:
+            errors.append(InvalidArgumentError('A page size above 0 is required.'))
+        if page_index is None or page_index < 0:
+            errors.append(InvalidArgumentError('A page index above or equal to zero is required.'))
 
-        vcf_filtered_rows = self.filter_vcf_file.run(
+        if errors.errors:
+            raise errors
+
+        vcf_filtered_rows: List[VcfRow] = self.filter_vcf_file.run(
             vcf_file_path=vcf_file_path,
             headers=[VCFHeader.chrom, VCFHeader.pos, VCFHeader.alt, VCFHeader.ref, VCFHeader.id],
             filter_id=filter_id,
@@ -71,41 +77,45 @@ class AppendDataToVcfFileService:
     def apply(
             self,
             vcf_file_path: str,
-            data: List[Dict[str, Union[str, int]]] = None
-    ) -> Dict[str, Union[int, str]]:
+            vcf_rows: List[VcfRow] = None
+    ) -> AppendRowsExecutionArtifact:
         """
         Handles data appending on a VCF File.
 
         :param vcf_file_path: The VCF file path to load.
-        :param data: The list of data to append.
+        :param vcf_rows: The list of VcfRows to append.
 
-        :return: The total number of rows appended to the VCF file.
+        :return: The VCF file rows append execution artifact.
 
         :raise: InvalidArgumentError: In case an invalid argument is provided.
         """
+        errors: MultipleVCFHandlerBaseError = MultipleVCFHandlerBaseError()
         if not vcf_file_path:
-            raise InvalidArgumentError('The VCF file path is required.')
-        if not data:
-            raise InvalidArgumentError('At least one row of data is required.')
+            errors.append(InvalidArgumentError('The VCF file path is required.'))
+        if not vcf_rows:
+            errors.append(InvalidArgumentError('At least one row of data is required.'))
+
+        if errors.errors:
+            raise errors
 
         total_rows_added: int = self.append_to_vcf_file.run(
             vcf_file_path=vcf_file_path,
-            data=data
+            vcf_rows=vcf_rows
         )
 
-        return {
-            "total_rows_added": total_rows_added,
-            "file_path": vcf_file_path,
-        }
+        return AppendRowsExecutionArtifact(
+            total_rows_added=total_rows_added,
+            file_path=vcf_file_path
+        )
 
 
-class FilterOutByIdVcfFileService:
+class FilterOutRowsByIdService:
 
     def __init__(
             self,
-            filter_out_by_id_vcf_file: FilterOutByIdVcfFile,
+            filter_out_rows_by_id: FilterOutRowsById,
     ):
-        self.filter_out_by_id_vcf_file = filter_out_by_id_vcf_file
+        self.filter_out_rows_by_id = filter_out_rows_by_id
 
     def apply(
             self,
@@ -121,12 +131,16 @@ class FilterOutByIdVcfFileService:
         :raise: InvalidArgumentError: In case an invalid argument is provided.
                 VcfNoDataDeletedError: In case no data were found to delete.
         """
+        errors: MultipleVCFHandlerBaseError = MultipleVCFHandlerBaseError()
         if not vcf_file_path:
-            raise InvalidArgumentError('The VCF file path is required.')
+            errors.append(InvalidArgumentError('The VCF file path is required.'))
         if not filter_id:
-            raise InvalidArgumentError('The Filter ID is required.')
+            errors.append(InvalidArgumentError('The Filter ID is required.'))
 
-        deleted_rows: int = self.filter_out_by_id_vcf_file.run(
+        if errors.errors:
+            raise errors
+
+        deleted_rows: int = self.filter_out_rows_by_id.run(
             vcf_file_path=vcf_file_path,
             filter_id=filter_id,
         )
@@ -147,8 +161,8 @@ class VcfFileUpdateByIdService:
             self,
             vcf_file_path: str,
             filter_id: str,
-            data: Dict[str, Union[str, int]] = None
-    ) -> Dict[str, Union[int, str]]:
+            data: VcfRow = None
+    ) -> UpdatedRowsExecutionArtifact:
         """
         VCF File update Service.
 
@@ -156,16 +170,20 @@ class VcfFileUpdateByIdService:
         :param filter_id: The filter id.
         :param data: The data to update file by id.
 
-        :return: The total number of rows updated to the VCF file.
+        :return: The VCF file rows update execution artifact.
 
         :raise: InvalidArgumentError: In case an invalid argument is provided.
         """
+        errors: MultipleVCFHandlerBaseError = MultipleVCFHandlerBaseError()
         if not vcf_file_path:
-            raise InvalidArgumentError('The VCF file path is required.')
+            errors.append(InvalidArgumentError('The VCF file path is required.'))
         if not filter_id:
-            raise InvalidArgumentError('The Filter ID is required.')
+            errors.append(InvalidArgumentError('The Filter ID is required.'))
         if not data:
-            raise InvalidArgumentError('Data are required.')
+            errors.append(InvalidArgumentError('Data are required.'))
+
+        if errors.errors:
+            raise errors
 
         updated_rows = self.update_by_id_vcf_file.run(
             vcf_file_path=vcf_file_path,
@@ -176,7 +194,7 @@ class VcfFileUpdateByIdService:
         if updated_rows == 0:
             raise VcfDataUpdateError("No data found for update")
 
-        return {
-            "total_rows_updated": updated_rows,
-            "file_path": vcf_file_path,
-        }
+        return UpdatedRowsExecutionArtifact(
+            total_rows_updated=updated_rows,
+            file_path=vcf_file_path
+        )

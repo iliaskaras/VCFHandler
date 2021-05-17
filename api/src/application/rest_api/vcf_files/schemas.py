@@ -1,7 +1,9 @@
 import re
 
-from marshmallow import fields, validate
+from marshmallow import fields, validate, post_load
 from marshmallow.schema import BaseSchema, Schema
+
+from application.vcf_files.models import VcfRow
 
 
 class PostVcfRowSchema(Schema):
@@ -19,13 +21,20 @@ class PostVcfRowSchema(Schema):
     ref = fields.Str(
         data_key='REF',
         required=True,
-        validate=validate.Regexp(regex=re.compile("^([ACGT.]$)"))
+        validate=validate.Regexp(regex=re.compile("^[ACGT.]{1,5}$"))
     )
     alt = fields.Str(
         data_key='ALT',
         required=True,
-        validate=validate.Regexp(regex=re.compile("^([ACGT.]$)"))
+        validate=validate.Regexp(regex=re.compile("^[ACGT.]{1,5}$"))
     )
+
+    @post_load
+    def load_vcf_row(self, data, **kwargs):
+        if isinstance(data, dict):
+            return VcfRow(**data)
+        else:
+            return data
 
 
 class VcfFilePostRequestSchema(BaseSchema):

@@ -2,6 +2,7 @@ help:
 	@echo " "
 	@echo "Targets:"
 	@echo " "
+	@echo "- make run-unit-tests"
 	@echo "- make check-quality"
 	@echo "- make check-types"
 	@echo "- make lint"
@@ -24,3 +25,7 @@ check-format:
 
 format:
 		black api/src/application/
+
+run-unit-tests:
+
+		pytest -v api/src/tests/application/unit_tests

@@ -125,8 +125,8 @@ class Configuration:
         :return: The test configuration instance.
         """
         return Configuration(
-            postgresql_connection_uri=os.getenv("POSTGRESQL_CONNECTION_URI"),
-            jwt_secret_key=os.getenv("JWT_SECRET_KEY"),
+            postgresql_connection_uri='postgresql+psycopg2://vcf_handler_api:123456@0.0.0.0:5432/vcf_handler_api',
+            jwt_secret_key='6\xd8y\x80&q\xe2\xe2yO\xf5\xb5\xbf\xdbw.',
             salt="test",
             debug=True,
         )
