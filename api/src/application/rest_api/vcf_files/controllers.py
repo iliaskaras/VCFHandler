@@ -67,7 +67,7 @@ class AppendDataToVcfFile(Resource):
 
 
 @ns.route("")
-class AppendDataToVcfFile(Resource):
+class DeleteDataToVcfFile(Resource):
     @accept(AcceptHeader.json.value, AcceptHeader.xml.value, AcceptHeader.all.value)
     @map_errors()
     @guard(permission=Permission.execute)
