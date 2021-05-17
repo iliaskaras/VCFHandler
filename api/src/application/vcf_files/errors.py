@@ -9,3 +9,8 @@ class VcfRowsByIdNotExistError(InvalidArgumentError):
 class VcfDataAppendError(InvalidArgumentError):
     message = "Vcf Data Append Error."
     error_type = "VcfDataAppendError"
+
+
+class VcfDataDeleteError(InvalidArgumentError):
+    message = "Vcf Data Delete Error."
+    error_type = "VcfDataDeleteError"

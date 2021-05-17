@@ -105,26 +105,22 @@ class FilterOutByIdVcfFileService:
             self,
             vcf_file_path: str,
             filter_id: str,
-    ) -> Dict[str, Union[int, str]]:
+    ) -> None:
         """
         Handles data appending on a VCF File.
 
         :param vcf_file_path: The VCF file path to load.
         :param filter_id: The filter id.
 
-        :return: The total number of rows deleted from the VCF file and the file path.
+        :raise: InvalidArgumentError: In case an invalid argument is provided.
         """
         if not vcf_file_path:
             raise InvalidArgumentError('The VCF file path is required.')
         if not filter_id:
             raise InvalidArgumentError('The Filter ID is required.')
 
-        total_rows_deleted: int = self.filter_out_by_id_vcf_file.run(
+        self.filter_out_by_id_vcf_file.run(
             vcf_file_path=vcf_file_path,
             filter_id=filter_id,
         )
 
-        return {
-            "total_rows_deleted": total_rows_deleted,
-            "file_path": vcf_file_path,
-        }
