@@ -2,7 +2,7 @@ from typing import List, Dict, Union
 
 from application.infrastructure.error.errors import InvalidArgumentError
 from application.rest_api.vcf_files.enums import VCFHeader
-from application.rest_api.vcf_files.operations import FilterVcfFile, AppendToVcfFile
+from application.rest_api.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutByIdVcfFile
 from application.vcf_files.models import FilteredVcfRowsPage
 
 
@@ -24,12 +24,12 @@ class VcfFilePaginationService:
         """
         VCF File pagination Service.
 
-        @:param vcf_file_path: The VCF file path to load.
-        @:param filter_id: The source node.
-        @:param page_size: The size of the page.
-        @:param page_index: The index of the page.
+        :param vcf_file_path: The VCF file path to load.
+        :param filter_id: The filter id.
+        :param page_size: The size of the page.
+        :param page_index: The index of the page.
 
-        @:return: A FilteredVcfRowsPage.
+        :return: A FilteredVcfRowsPage.
         """
 
         if not filter_id:
@@ -72,10 +72,10 @@ class AppendDataToVcfFileService:
         """
         Handles data appending on a VCF File.
 
-        @:param vcf_file_path: The VCF file path to load.
-        @:param data: The list of data to append.
+        :param vcf_file_path: The VCF file path to load.
+        :param data: The list of data to append.
 
-        @:return: A FilteredVcfRowsPage.
+        :return: The total number of rows appended to the VCF file and the file path.
         """
         if not vcf_file_path:
             raise InvalidArgumentError('The VCF file path is required.')
@@ -89,5 +89,42 @@ class AppendDataToVcfFileService:
 
         return {
             "total_rows_added": total_rows_added,
+            "file_path": vcf_file_path,
+        }
+
+
+class FilterOutByIdVcfFileService:
+
+    def __init__(
+            self,
+            filter_out_by_id_vcf_file: FilterOutByIdVcfFile,
+    ):
+        self.filter_out_by_id_vcf_file = filter_out_by_id_vcf_file
+
+    def apply(
+            self,
+            vcf_file_path: str,
+            filter_id: str,
+    ) -> Dict[str, Union[int, str]]:
+        """
+        Handles data appending on a VCF File.
+
+        :param vcf_file_path: The VCF file path to load.
+        :param filter_id: The filter id.
+
+        :return: The total number of rows deleted from the VCF file and the file path.
+        """
+        if not vcf_file_path:
+            raise InvalidArgumentError('The VCF file path is required.')
+        if not filter_id:
+            raise InvalidArgumentError('The Filter ID is required.')
+
+        total_rows_deleted: int = self.filter_out_by_id_vcf_file.run(
+            vcf_file_path=vcf_file_path,
+            filter_id=filter_id,
+        )
+
+        return {
+            "total_rows_deleted": total_rows_deleted,
             "file_path": vcf_file_path,
         }

@@ -33,6 +33,21 @@ class VcfFilePostRequestSchema(BaseSchema):
     data = fields.Nested(PostVcfRowSchema, many=True, data_key='data')
 
 
+class VcfFileDeleteRequestSchema(BaseSchema):
+    file_path = fields.Str(required=True, data_key='filePath', default=None)
+    filter_id = fields.Str(
+        required=True,
+        data_key='id',
+        default=None,
+        validate=validate.Regexp(regex=re.compile("^rs([0-9]+$)"))
+    )
+
+
+class VcfFileDeletedResponseSchema(BaseSchema):
+    total_rows_deleted = fields.Int(data_key='totalRowsDeleted', default=0)
+    file_path = fields.Str(data_key='filePath', required=True)
+
+
 class VcfFilePostResponseSchema(BaseSchema):
     total_rows_added = fields.Int(data_key='totalRowsAdded', default=0)
     file_path = fields.Str(data_key='filePath', required=True)

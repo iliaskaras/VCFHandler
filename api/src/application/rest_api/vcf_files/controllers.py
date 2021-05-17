@@ -8,9 +8,10 @@ from application.rest_api.decorators import map_request, map_response, map_error
 from application.rest_api.enums import AcceptHeader
 from application.rest_api.rest_plus import api
 from application.rest_api.vcf_files.schemas import VcfFilePaginationRequestSchema, VcfFilePaginationResponseSchema, \
-    VcfFilePostRequestSchema, VcfFilePostResponseSchema
+    VcfFilePostRequestSchema, VcfFilePostResponseSchema, VcfFileDeleteRequestSchema, VcfFileDeletedResponseSchema
 from application.user.enums import Permission
-from application.vcf_files.factories import vcf_file_pagination_service, append_data_to_vcf_file_service
+from application.vcf_files.factories import vcf_file_pagination_service, append_data_to_vcf_file_service, \
+    vcf_file_filter_out_by_id_service
 
 ns = api.namespace(
     "vcf-files", description="VCF files related endpoints."
@@ -34,16 +35,15 @@ class VcfFilePagination(Resource):
         :param page_size: The page size.
         :param page_index: The page index.
 
-        :return: The Jwt that contains the access token.
+        :return: The paginated VCF File rows.
         """
 
-        result = vcf_file_pagination_service().apply(
+        return vcf_file_pagination_service().apply(
             vcf_file_path=file_path,
             filter_id=filter_id,
             page_size=page_size,
             page_index=page_index,
         )
-        return result
 
 
 @ns.route("")
@@ -60,7 +60,27 @@ class AppendDataToVcfFile(Resource):
         :param file_path: The VCF filename.
         :param data: A list of rows to append to the file.
 
-        :return: The Jwt that contains the access token.
+        :return: The total number of rows appended to the VCF file and the file path.
         """
 
         return append_data_to_vcf_file_service().apply(vcf_file_path=file_path, data=data)
+
+
+@ns.route("")
+class AppendDataToVcfFile(Resource):
+    @accept(AcceptHeader.json.value, AcceptHeader.xml.value, AcceptHeader.all.value)
+    @map_errors()
+    @guard(permission=Permission.execute)
+    @map_request(VcfFileDeleteRequestSchema())
+    @map_response(schema=VcfFileDeletedResponseSchema(), status_code=201)
+    def delete(self, file_path: str, filter_id: str) -> Dict[str, Union[int, str]]:
+        """
+        Controller for handling removing rows to VCF files.
+
+        :param file_path: The VCF filename.
+        :param filter_id: The id rows to remove from the VCF file.
+
+        :return: The total number of rows deleted to the VCF file and the file path.
+        """
+
+        return vcf_file_filter_out_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id)
