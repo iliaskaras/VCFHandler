@@ -1,16 +1,6 @@
 import gzip
 import os
 import pytest
-from application.infrastructure.configurations.enums import Environment
-from application.infrastructure.configurations.models import ENV_VAR_NAME, Configuration
-
-
-@pytest.fixture(scope='session')
-def initialize_configuration() -> None:
-    # Set Configuration environment to be equal to test environment.
-    os.environ[ENV_VAR_NAME] = Environment.test.value
-
-    Configuration.initialize()
 
 
 @pytest.fixture

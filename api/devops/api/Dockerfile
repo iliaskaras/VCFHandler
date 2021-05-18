@@ -28,12 +28,11 @@ RUN mkdir -p ${vcf_handler_api_directory}/src \
   && chmod -R 770 ${vcf_handler_api_directory}
 
 # Copy and install VCF File Handler API requirements.txt.
-COPY --chown=vcfapiuser:vcfapiuser "requirements.txt" ${vcf_handler_api_directory}/
-RUN chmod 600 ${vcf_handler_api_directory}/requirements.txt \
-  && pip3 install -r ${vcf_handler_api_directory}/requirements.txt
+COPY --chown=vcfapiuser:vcfapiuser "api/requirements.txt" ${vcf_handler_api_directory}/
+RUN pip3 install -r ${vcf_handler_api_directory}/requirements.txt
 
 # Copy VCF File Handler API source code.
-COPY --chown=vcfapiuser:vcfapiuser "src" ${vcf_handler_api_directory}/src/
+COPY --chown=vcfapiuser:vcfapiuser "api/src" ${vcf_handler_api_directory}/src/
 
 # Run VCF File Handler API.
 WORKDIR ${vcf_handler_api_directory}

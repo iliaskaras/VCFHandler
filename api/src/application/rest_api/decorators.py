@@ -5,6 +5,7 @@ import flask
 from flask import Response, make_response, request
 from flask_jwt_extended.exceptions import NoAuthorizationError
 from json2xml.utils import readfromstring
+from jwt import InvalidSignatureError
 from marshmallow import Schema
 from webargs.flaskparser import use_kwargs
 from werkzeug.exceptions import UnprocessableEntity
@@ -240,7 +241,7 @@ def map_base_errors_to_public(
 
                 # In case we haven't mapped the Base Exception to any Public Error.
                 raise InternalServerHttpError()
-            except NoAuthorizationError as ex:
+            except (NoAuthorizationError, InvalidSignatureError) as ex:
                 raise AuthorizationHttpError([Error(message=str(ex.args[0]), error_type=403)])
             except Exception:
                 raise InternalServerHttpError()
