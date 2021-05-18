@@ -20,13 +20,11 @@ RUN groupadd --system --gid ${migrations_group_id} migrationuser \
   && useradd --system --shell /usr/sbin/nologin --gid migrationuser --uid ${migrations_user_id} migrationuser
 
 # Create VCF Handler API directory.
-RUN mkdir -p ${vcf_handler_api_directory}/src \
-  && chown -R migrationuser:migrationuser ${vcf_handler_api_directory} \
-  && chmod -R 770 ${vcf_handler_api_directory}
+RUN mkdir -p ${vcf_handler_api_directory}/src
 
 # Copy VCF Handler API migrations code.
-COPY --chown=migrationuser:migrationuser "src" ${vcf_handler_api_directory}/src/
-COPY --chown=migrationuser:migrationuser "alembic.ini" ${vcf_handler_api_directory}/
+COPY --chown=migrationuser:migrationuser "api/src" ${vcf_handler_api_directory}/src/
+COPY --chown=migrationuser:migrationuser "api/alembic.ini" ${vcf_handler_api_directory}/
 
 WORKDIR ${vcf_handler_api_directory}
 ENV PYTHONPATH ${vcf_handler_api_directory}/src
