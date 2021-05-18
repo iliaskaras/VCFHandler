@@ -1,5 +1,5 @@
 # VCFHandler
-###A REST API written with the Flask Web Framework
+### A REST API written with the Flask Web Framework
 
 A Flask Rest API that provides endpoints for manipulating VCF type of files.
 
