@@ -53,10 +53,23 @@ class VcfFileFilteringRequestSchema(BaseSchema):
 
 
 class VcfFileDeleteRequestSchema(VcfFileFilteringRequestSchema):
-    pass
+    filter_id = fields.Str(
+        required=True,
+        data_key='id',
+        default=None,
+        validate=validate.Regexp(regex=re.compile("^rs([0-9]+$)"))
+    )
+    file_path = fields.Str(required=True, data_key='filePath', default=None)
 
 
 class VcfFileUpdateRequestSchema(VcfFileFilteringRequestSchema):
+    filter_id = fields.Str(
+        required=True,
+        data_key='id',
+        default=None,
+        validate=validate.Regexp(regex=re.compile("^rs([0-9]+$)"))
+    )
+    file_path = fields.Str(required=True, data_key='filePath', default=None)
     data = fields.Nested(PostVcfRowSchema, data_key='data', required=True)
 
 
@@ -77,12 +90,14 @@ class VcfFilePostResponseSchema(BaseSchema):
 
 class VcfFilePaginationRequestSchema(BaseSchema):
     file_path = fields.Str(required=True, data_key='filePath', default=None)
-    filter_id = fields.Str(required=True, data_key='id', default=None)
+    filter_id = fields.Str(
+        required=True, data_key='id', default=None,  validate=validate.Regexp(regex=re.compile("^rs([0-9]+$)"))
+    )
     page_size = fields.Int(
-        data_key='pageSize', missing=30, required=False, allow_none=False, validate=validate.Range(min=1), strict=True
+        data_key='pageSize', missing=30, required=False, allow_none=False, validate=validate.Range(min=1)
     )
     page_index = fields.Int(
-        data_key='pageIndex', missing=0, required=False, allow_none=False, validate=validate.Range(min=0), strict=True
+        data_key='pageIndex', missing=0, required=False, allow_none=False, validate=validate.Range(min=0)
     )
 
 

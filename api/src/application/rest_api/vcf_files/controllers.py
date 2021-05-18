@@ -95,7 +95,7 @@ class UpdateDataToVcfFile(Resource):
     @map_errors()
     @guard(permission=Permission.execute)
     @map_request(VcfFileUpdateRequestSchema())
-    @map_response(schema=VcfFileUpdateResponseSchema(), status_code=201)
+    @map_response(schema=VcfFileUpdateResponseSchema(), status_code=200)
     def patch(
             self,
             file_path: str,
