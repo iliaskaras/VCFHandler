@@ -44,12 +44,12 @@ deploy-local:
 		@echo "=================================== Requirements ====================================="
 		@echo "1. Ensure you have Docker installed and service up and running in your system."
 		@echo "2. Ensure you have Docker Compose installed and with permissions to execute it."
-		docker build -f api/devops/migrations/Dockerfile -t vcf-handler-api-migrations .
-		docker tag vcf-handler-api-migrations vcf-handler-api-migrations:0.1
-		docker build -f api/devops/api/Dockerfile -t vcf-handler-api .
-		docker tag vcf-handler-api vcf-handler-api:0.1
-		docker-compose -f api/devops/docker-compose.yml up -d
+		sudo docker build -f api/devops/migrations/Dockerfile -t vcf-handler-api-migrations .
+		sudo docker tag vcf-handler-api-migrations vcf-handler-api-migrations:0.1
+		sudo docker build -f api/devops/api/Dockerfile -t vcf-handler-api .
+		sudo docker tag vcf-handler-api vcf-handler-api:0.1
+		sudo docker-compose -f api/devops/docker-compose.yml up -d
 
 down-services:
 		@echo "======================= Stopping Local Deployment Running Services==============================="
-		docker-compose -f api/devops/docker-compose.yml down
+		sudo docker-compose -f api/devops/docker-compose.yml down
