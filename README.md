@@ -45,7 +45,7 @@ make deploy-local
 
 * Run unit and integration tests with the Makefile command: 
 ```
-make deploy-local
+make run-tests
 ```
 
 ## Version History
