@@ -40,8 +40,20 @@ A Flask Rest API that provides endpoints for manipulating VCF type of files.
 ```
 make deploy-local
 ```
+* This will run the following:
+    * ****PostgreSQL container****
+    * ****Database migrations**** where 3 users will be created:
+        * email: read_user@mail.test | password: 123456
+        * email: ****execute_user@mail.test**** | password: 123456
+        * email: write_user@mail.test | password: 123456
+    * The ****REST API****
 
-### Tests
+### Testing the REST API
+
+* A collection of Postman ****VCFHandler.postman_collection.json**** requests is provided under the VCFHandler directory, import and:
+    * Authenticate via authentication/login endpoint using the ****execute_user@mail.test****.
+    * Add the returned ****'access_token'**** to the rest of the endpoints inside the bearer token.
+    * The VCF files that you will be using to execute your endpoints ****should locate under the '/mnt/data' directory, because this directory is volumed to the rest api docker container.****
 
 * Run unit and integration tests with the Makefile command: 
 ```

@@ -1,0 +1,360 @@
+{
+	"info": {
+		"_postman_id": "685d8f23-ecbb-46f6-8d1e-fb2b29555876",
+		"name": "VCFHandler",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "vcf-endpoints",
+			"item": [
+				{
+					"name": "Get Paginated VCF lines",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true,
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjEzNzYyMjgsIm5iZiI6MTYyMTM3NjIyOCwianRpIjoiODE3MWJlMzgtNDE0ZS00NzE0LWI1MzUtNjU1MTBiY2ExYTQ1IiwiZXhwIjoxNjIxMzc5ODI4LCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoiMyIsInVzZXJfcGVybWlzc2lvbiI6ImV4ZWN1dGUifSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.G9bEtdAfoKK53wBAYX11LiEmuXUWU2JhLrMmezSWXN4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "ETag",
+								"value": "\"file_path=/mnt/data/NA12877_API_10.vcf.gz&filter_id=rs123&page_index=0&page_size=3\"",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "If-None-Match",
+								"value": "\"file_path=/mnt/data/NA12877_API_10.vcf.gz&filter_id=rs123&page_index=0&page_size=3\"",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":\"rs123\",\n    \"filePath\":\"/mnt/data/NA12877_API_10.vcf.gz\",\n    \"pageSize\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8000/api/v1/vcf-files",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"vcf-files"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Paginated VCF lines query strings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjEzNzYyMjgsIm5iZiI6MTYyMTM3NjIyOCwianRpIjoiODE3MWJlMzgtNDE0ZS00NzE0LWI1MzUtNjU1MTBiY2ExYTQ1IiwiZXhwIjoxNjIxMzc5ODI4LCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoiMyIsInVzZXJfcGVybWlzc2lvbiI6ImV4ZWN1dGUifSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.G9bEtdAfoKK53wBAYX11LiEmuXUWU2JhLrMmezSWXN4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "ETag",
+								"type": "text",
+								"value": "\"file_path=/home/ilias/PycharmProjects/flaskProject/VCFHandler/api/src/application/rest_api/vcf_files/NA12877_API_10.vcf.gz&filter_id=rs123&page_index=0&page_size=2\"",
+								"disabled": true
+							},
+							{
+								"key": "If-None-Match",
+								"type": "text",
+								"value": "\"file_path=/mnt/data/NA12877_API_10.vcf&filter_id=rs123&page_index=0&page_size=5\""
+							}
+						],
+						"url": {
+							"raw": "127.0.0.1:8000/api/v1/vcf-files?id=rs124&filePath=/mnt/data/NA12877_API_10.vcf.gz&pageSize=5",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"vcf-files"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "rs124"
+								},
+								{
+									"key": "filePath",
+									"value": "/mnt/data/NA12877_API_10.vcf.gz"
+								},
+								{
+									"key": "pageSize",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Paginated VCF lines Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjEzNzYyMjgsIm5iZiI6MTYyMTM3NjIyOCwianRpIjoiODE3MWJlMzgtNDE0ZS00NzE0LWI1MzUtNjU1MTBiY2ExYTQ1IiwiZXhwIjoxNjIxMzc5ODI4LCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoiMyIsInVzZXJfcGVybWlzc2lvbiI6ImV4ZWN1dGUifSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.G9bEtdAfoKK53wBAYX11LiEmuXUWU2JhLrMmezSWXN4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "ETag",
+								"type": "text",
+								"value": "\"file_path=/home/ilias/PycharmProjects/flaskProject/VCFHandler/api/src/application/rest_api/vcf_files/NA12877_API_10.vcf.gz&filter_id=rs123&page_index=0&page_size=2\"",
+								"disabled": true
+							},
+							{
+								"key": "If-None-Match",
+								"type": "text",
+								"value": "\"file_path=/mnt/data/NA12877_API_10.vcf&filter_id=rs123&page_index=0&page_size=5\"",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":\"rs1\",\n    \"filePath\":\"/mnt/data/NA12877_API_10.vcf.gz\",\n    \"data\": {\"CHROM\": \"chrMY\", \"POS\": 5000, \"ALT\": \"C\", \"REF\": \"AC\", \"ID\":\"rs12\"}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8000/api/v1/vcf-files",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"vcf-files"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Append to VCF File",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjEzNzYyMjgsIm5iZiI6MTYyMTM3NjIyOCwianRpIjoiODE3MWJlMzgtNDE0ZS00NzE0LWI1MzUtNjU1MTBiY2ExYTQ1IiwiZXhwIjoxNjIxMzc5ODI4LCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoiMyIsInVzZXJfcGVybWlzc2lvbiI6ImV4ZWN1dGUifSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.G9bEtdAfoKK53wBAYX11LiEmuXUWU2JhLrMmezSWXN4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Auth",
+								"type": "text",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"filePath\":\"/mnt/data/NA12877_API_10.vcf.gz\",\n    \"data\": [{\"CHROM\": \"chr12\", \"POS\": 1000, \"ALT\": \"T\", \"REF\": \"AGCT\", \"ID\":\"rs12\"}, {\"CHROM\": \"chr21\", \"POS\": 1001, \"ALT\": \"T\", \"REF\": \"G\", \"ID\":\"rs12\"}]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8000/api/v1/vcf-files",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"vcf-files"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete VCF lines",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjEzNzYyMjgsIm5iZiI6MTYyMTM3NjIyOCwianRpIjoiODE3MWJlMzgtNDE0ZS00NzE0LWI1MzUtNjU1MTBiY2ExYTQ1IiwiZXhwIjoxNjIxMzc5ODI4LCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoiMyIsInVzZXJfcGVybWlzc2lvbiI6ImV4ZWN1dGUifSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.G9bEtdAfoKK53wBAYX11LiEmuXUWU2JhLrMmezSWXN4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "ETag",
+								"value": "\"file_path=/home/ilias/PycharmProjects/flaskProject/VCFHandler/api/src/application/rest_api/vcf_files/NA12877_API_10.vcf.gz&filter_id=rs123&page_index=0&page_size=2\"",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "If-None-Match",
+								"value": "\"file_path=/mnt/data/NA12877_API_10.vcf&filter_id=rs123&page_index=0&page_size=5\"",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":\"rs62635284\",\n    \"filePath\":\"/mnt/data/NA12877_API_10.vcf.gz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8000/api/v1/vcf-files",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"vcf-files"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "Login User",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"execute_user@mail.test\",\n    \"password\":\"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "0.0.0.0:8000/api/v1/authentication/login",
+							"host": [
+								"0",
+								"0",
+								"0",
+								"0"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"authentication",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
