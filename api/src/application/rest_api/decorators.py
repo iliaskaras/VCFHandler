@@ -143,6 +143,10 @@ def map_response(
             if response_type == AcceptHeader.xml.value:
                 json_object: str = json.dumps(enveloped_response)
                 enveloped_response = json2xml.Json2xml(readfromstring(json_object)).to_xml()
+                response = make_response(enveloped_response, status_code)
+                response.headers['Content-Type'] = 'application/xml'
+                return response
+
             # The enveloped_response is passed through the flask.jsonify method automatically by Flask.
             response = make_response(enveloped_response, status_code)
 
