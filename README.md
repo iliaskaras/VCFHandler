@@ -5,8 +5,8 @@ A Flask Rest API that provides endpoints for manipulating VCF type of files.
 
 ## Description
 
-###This project is a simple template of a typical Flask REST API application.
-#####Showcasing:
+### This project is a simple template of a typical Flask REST API application.
+##### Showcasing:
 1. Authentication via JWT
 2. Authorization via user permissions
 3. Error handling / Multiple error handling capabilities
@@ -16,7 +16,7 @@ A Flask Rest API that provides endpoints for manipulating VCF type of files.
 7. Marshmallow schema validations
 8. Rest API response and error formatting.
 
-###VCF file handling endpoints:
+### VCF file handling endpoints:
 1. ***GET***: Retrieve by ID rows from a VCF file in a pagination way.
     * ETag implementation
     * Different type of responses depending on the ACCEPT HTTP header.
@@ -24,7 +24,7 @@ A Flask Rest API that provides endpoints for manipulating VCF type of files.
 2. ***POST***: Appends a received row to a VCF file.
 3. ***PUT***: Update VCF records that much an ID with a provided row.
 4. ***Delete***: Deletes VCF records that match a provided ID. 
-######Note: All the endpoints of the application are guarded with user permission, authenticated with JWT, marshmallow request validation, map of the response to a specific format.
+###### Note: All the endpoints of the application are guarded with user permission, authenticated with JWT, marshmallow request validation, map of the response to a specific format.
 ## Getting Started
 
 ### Dependencies
