@@ -29,3 +29,12 @@ format:
 run-unit-tests:
 
 		pytest -v api/src/tests/application/unit_tests
+
+run-integration-tests:
+
+		pytest -v api/src/tests/application/integration_tests
+
+run-tests:
+
+		pytest -v api/src/tests/application/unit_tests
+		pytest -v api/src/tests/application/integration_tests

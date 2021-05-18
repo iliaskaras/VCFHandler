@@ -6,11 +6,14 @@ from marshmallow.schema import BaseSchema, Schema
 from application.vcf_files.models import VcfRow
 
 
+# Validations on the fields are based on what the provided real file contains.
+# ref & alt: contains any number of ACGT. char occurrences.
+# chrom: contains a string starts with chr, followed by a number from 1 to 22 or followed by a X, Y or M.
 class PostVcfRowSchema(Schema):
     chrom = fields.Str(
         data_key='CHROM',
         required=True,
-        validate=validate.Regexp(regex=re.compile("^chr((2[0-2]|1[0-9]|[1-9]|[XYM])$)"))
+        validate=validate.Regexp(regex=re.compile("^chr((2[0-2]|1[0-9]|[1-9]|([X]?|[Y]?|[M])?)$)"))
     )
     pos = fields.Int(data_key='POS', required=True, strict=True)
     identifier = fields.Str(
@@ -21,12 +24,12 @@ class PostVcfRowSchema(Schema):
     ref = fields.Str(
         data_key='REF',
         required=True,
-        validate=validate.Regexp(regex=re.compile("^[ACGT.]{1,5}$"))
+        validate=validate.Regexp(regex=re.compile("([ACGT.]*)$"))
     )
     alt = fields.Str(
         data_key='ALT',
         required=True,
-        validate=validate.Regexp(regex=re.compile("^[ACGT.]{1,5}$"))
+        validate=validate.Regexp(regex=re.compile("([ACGT.]*)$"))
     )
 
     @post_load
