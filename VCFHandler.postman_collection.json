@@ -253,7 +253,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjEzNzYyMjgsIm5iZiI6MTYyMTM3NjIyOCwianRpIjoiODE3MWJlMzgtNDE0ZS00NzE0LWI1MzUtNjU1MTBiY2ExYTQ1IiwiZXhwIjoxNjIxMzc5ODI4LCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoiMyIsInVzZXJfcGVybWlzc2lvbiI6ImV4ZWN1dGUifSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.G9bEtdAfoKK53wBAYX11LiEmuXUWU2JhLrMmezSWXN4",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjEzODQzNTUsIm5iZiI6MTYyMTM4NDM1NSwianRpIjoiZjAyOGM2NjktYzY2NC00YzViLTllZTUtNGFmMmMxMjFlMzZiIiwiZXhwIjoxNjIxMzg3OTU1LCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoiMyIsInVzZXJfcGVybWlzc2lvbiI6ImV4ZWN1dGUifSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.KecMabmZYs_3TV4085nyvwVyRHLM3BxxDbEi7U1tHqc",
 									"type": "string"
 								}
 							]
@@ -300,6 +300,67 @@
 								"api",
 								"v1",
 								"vcf-files"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete VCF lines Async",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MjEzODQzNTUsIm5iZiI6MTYyMTM4NDM1NSwianRpIjoiZjAyOGM2NjktYzY2NC00YzViLTllZTUtNGFmMmMxMjFlMzZiIiwiZXhwIjoxNjIxMzg3OTU1LCJpZGVudGl0eSI6eyJ1c2VyX2lkIjoiMyIsInVzZXJfcGVybWlzc2lvbiI6ImV4ZWN1dGUifSwiZnJlc2giOnRydWUsInR5cGUiOiJhY2Nlc3MifQ.KecMabmZYs_3TV4085nyvwVyRHLM3BxxDbEi7U1tHqc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "ETag",
+								"type": "text",
+								"value": "\"file_path=/home/ilias/PycharmProjects/flaskProject/VCFHandler/api/src/application/rest_api/vcf_files/NA12877_API_10.vcf.gz&filter_id=rs123&page_index=0&page_size=2\"",
+								"disabled": true
+							},
+							{
+								"key": "If-None-Match",
+								"type": "text",
+								"value": "\"file_path=/mnt/data/NA12877_API_10.vcf&filter_id=rs123&page_index=0&page_size=5\"",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\":\"rs62635284\",\n    \"filePath\":\"/mnt/data/NA12877_API_10.vcf.gz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "127.0.0.1:8000/api/v1/vcf-files/async",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"vcf-files",
+								"async"
 							]
 						}
 					},
