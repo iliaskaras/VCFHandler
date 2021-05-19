@@ -5,7 +5,7 @@ ARG vcf_handler_api_group_id=9003
 
 # Environment variables such as salt, jwt_secret_key and postgresql_connection_uri should not be desplayed like that
 # and instead be passed with some other mechanism that hides these information. Ansible could be used for example.
-ARG vcf_handler_api_directory="/usr/local/vcf-handler-api"
+ARG vcf_handler_api_directory="/usr/local/vcf-handler-worker"
 ARG vcf_files_api_environment="local"
 ARG postgresql_connection_uri="postgresql+psycopg2://vcf_handler_api:123456@0.0.0.0:5432/vcf_handler_api"
 ARG salt="salt"
@@ -39,8 +39,4 @@ RUN pip3 install -r ${vcf_handler_api_directory}/requirements.txt
 COPY --chown=vcfapiuser:vcfapiuser "api/src" ${vcf_handler_api_directory}/src/
 
 # Run VCF File Handler API.
-WORKDIR ${vcf_handler_api_directory}
-ENV PYTHONPATH ${vcf_handler_api_directory}/src
-USER vcfapiuser
-ENTRYPOINT ["gunicorn", "application.wsgi:application"]
-CMD ["--bind", "0.0.0.0:8000", "--workers", "2"]
+WORKDIR ${vcf_handler_api_directory}/src

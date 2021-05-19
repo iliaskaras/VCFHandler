@@ -12,7 +12,7 @@ from application.rest_api.vcf_files.schemas import VcfFilePaginationRequestSchem
     VcfFileUpdateResponseSchema
 from application.user.enums import Permission
 from application.vcf_files.factories import vcf_file_pagination_service, append_data_to_vcf_file_service, \
-    filter_out_rows_by_id_service, vcf_file_update_by_id_service
+    filter_out_rows_by_id_service, vcf_file_update_by_id_service, async_filter_out_rows_by_id_service
 from application.vcf_files.models import AppendRowsExecutionArtifact, VcfRow, UpdatedRowsExecutionArtifact
 
 ns = api.namespace(
@@ -113,3 +113,23 @@ class UpdateDataToVcfFile(Resource):
         """
 
         return vcf_file_update_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id, data=data)
+
+
+@ns.route("/async")
+class AsyncDeleteDataToVcfFile(Resource):
+    @accept(AcceptHeader.json.value, AcceptHeader.xml.value, AcceptHeader.all.value)
+    @map_errors()
+    @guard(permission=Permission.execute)
+    @map_request(VcfFileDeleteRequestSchema())
+    @map_response(status_code=204)
+    def delete(self, file_path: str, filter_id: str) -> None:
+        """
+        Controller for handling removing rows to VCF files.
+
+        :param file_path: The VCF filename.
+        :param filter_id: The id rows to remove from the VCF file.
+
+        :return: Upon successfully deletion, a 204 NO CONTENT response is returned.
+        """
+
+        async_filter_out_rows_by_id_service().apply(vcf_file_path=file_path, filter_id=filter_id)

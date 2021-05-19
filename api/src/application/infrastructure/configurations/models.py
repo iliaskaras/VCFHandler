@@ -27,6 +27,8 @@ class Configuration:
         salt: str,
         postgresql_connection_uri: str,
         jwt_secret_key: str,
+        celery_broker_url: str,
+        celery_result_backend: str,
         jwt_expiration: int = 3600,
         debug: bool = False,
     ):
@@ -36,6 +38,10 @@ class Configuration:
             raise InvalidArgumentError("The PostgreSQL connection uri is required.")
         if not jwt_secret_key:
             raise InvalidArgumentError("The jwt secret key is required.")
+        if not celery_broker_url:
+            raise InvalidArgumentError("The celery broker url is required.")
+        if not celery_result_backend:
+            raise InvalidArgumentError("The celery result backend is required.")
         if not jwt_expiration:
             raise InvalidArgumentError("The jwt expiration is required.")
         if not isinstance(debug, bool):
@@ -43,6 +49,8 @@ class Configuration:
 
         self.salt = salt
         self.postgresql_connection_uri = postgresql_connection_uri
+        self.celery_broker_url = celery_broker_url
+        self.celery_result_backend = celery_result_backend
         self.jwt_secret_key = jwt_secret_key
         self.jwt_expiration = jwt_expiration
         self.debug = debug
@@ -112,6 +120,8 @@ class Configuration:
         """
         return Configuration(
             postgresql_connection_uri=os.getenv("POSTGRESQL_CONNECTION_URI"),
+            celery_broker_url=os.getenv("CELERY_BROKER_URL"),
+            celery_result_backend=os.getenv("CELERY_RESULT_BACKEND"),
             jwt_secret_key=os.getenv("JWT_SECRET_KEY"),
             salt=os.getenv("SALT"),
             debug=True,
@@ -126,6 +136,8 @@ class Configuration:
         """
         return Configuration(
             postgresql_connection_uri='postgresql+psycopg2://vcf_handler_api:123456@0.0.0.0:5432/vcf_handler_api',
+            celery_broker_url="redis://localhost:6379",
+            celery_result_backend="redis://localhost:6379",
             jwt_secret_key='6\xd8y\x80&q\xe2\xe2yO\xf5\xb5\xbf\xdbw.',
             salt="test",
             debug=True,
@@ -140,6 +152,8 @@ class Configuration:
         """
         return Configuration(
             postgresql_connection_uri=os.getenv("POSTGRESQL_CONNECTION_URI"),
+            celery_broker_url=os.getenv("CELERY_BROKER_URL"),
+            celery_result_backend=os.getenv("CELERY_RESULT_BACKEND"),
             jwt_secret_key=os.getenv("JWT_SECRET_KEY"),
             salt=os.getenv("SALT"),
             debug=False,

@@ -15,6 +15,7 @@ A Flask Rest API that provides endpoints for manipulating VCF type of files.
 6. SQLAlchemy integration
 7. Marshmallow schema validations
 8. Rest API response and error formatting.
+9. Celery for async tasks with Redis as broker.
 
 ### VCF file handling endpoints:
 1. ***GET***: Retrieve by ID rows from a VCF file in a pagination way.
@@ -24,6 +25,7 @@ A Flask Rest API that provides endpoints for manipulating VCF type of files.
 2. ***POST***: Appends a received row to a VCF file.
 3. ***PUT***: Update VCF records that much an ID with a provided row.
 4. ***Delete***: Deletes VCF records that match a provided ID. 
+5. ***Delete***: An Async version of (4).
 ###### Note: All the endpoints of the application are guarded with user permission, authenticated with JWT, marshmallow request validation, map of the response to a specific format.
 ## Getting Started
 
@@ -46,6 +48,8 @@ make deploy-local
         * email: read_user@mail.test | password: 123456
         * email: ****execute_user@mail.test**** | password: 123456
         * email: write_user@mail.test | password: 123456
+    * The ****Redis****
+    * The ****The Worker****
     * The ****REST API****
 
 ### Testing the REST API

@@ -3,7 +3,7 @@ from typing import List
 from application.infrastructure.error.errors import InvalidArgumentError, MultipleVCFHandlerBaseError
 from application.rest_api.vcf_files.enums import VCFHeader
 from application.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutRowsById, \
-    UpdateByIdVcfFile
+    UpdateByIdVcfFile, AsyncFilterOutRowsById
 from application.vcf_files.errors import VcfNoDataDeletedError, VcfDataUpdateError
 from application.vcf_files.models import FilteredVcfRowsPage, VcfRow, AppendRowsExecutionArtifact, \
     UpdatedRowsExecutionArtifact
@@ -141,6 +141,46 @@ class FilterOutRowsByIdService:
             raise errors
 
         deleted_rows: int = self.filter_out_rows_by_id.run(
+            vcf_file_path=vcf_file_path,
+            filter_id=filter_id,
+        )
+
+        if deleted_rows == 0:
+            raise VcfNoDataDeletedError("No data found for deletion")
+
+
+class AsyncFilterOutRowsByIdService:
+
+    def __init__(
+            self,
+            filter_out_rows_by_id: AsyncFilterOutRowsById,
+    ):
+        self.filter_out_rows_by_id = filter_out_rows_by_id
+
+    def apply(
+            self,
+            vcf_file_path: str,
+            filter_id: str,
+    ) -> None:
+        """
+        Handles data appending on a VCF File.
+
+        :param vcf_file_path: The VCF file path to load.
+        :param filter_id: The filter id.
+
+        :raise: InvalidArgumentError: In case an invalid argument is provided.
+                VcfNoDataDeletedError: In case no data were found to delete.
+        """
+        errors: MultipleVCFHandlerBaseError = MultipleVCFHandlerBaseError()
+        if not vcf_file_path:
+            errors.append(InvalidArgumentError('The VCF file path is required.'))
+        if not filter_id:
+            errors.append(InvalidArgumentError('The Filter ID is required.'))
+
+        if errors.errors:
+            raise errors
+
+        deleted_rows: int = self.filter_out_rows_by_id.run.delay(
             vcf_file_path=vcf_file_path,
             filter_id=filter_id,
         )

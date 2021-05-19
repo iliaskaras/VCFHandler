@@ -10,6 +10,7 @@ from application.vcf_files.errors import VcfRowsByIdNotExistError, VcfDataAppend
     VcfDataUpdateError
 from application.vcf_files.models import VcfRow
 import pandas as pd
+from application.infrastructure.celery.celery import celery_app
 
 
 class FilterVcfFile:
@@ -232,6 +233,80 @@ class FilterOutRowsById:
         return total_deleted_rows
 
 
+class AsyncFilterOutRowsById:
+
+    @celery_app.task(bind=True)
+    def run(
+            self,
+            vcf_file_path: str = None,
+            filter_id: str = None,
+    ) -> int:
+        """
+        Async version.
+        Loads and filters a VCF File based on the provided filtered id.
+
+        :param vcf_file_path: The VCF file path to load.
+        :param filter_id: The filter id.
+
+        :return: The list of filtered by ID VcfRows.
+
+        :raise InvalidArgumentError: If there is an invalid argument.
+               VcfDataDeleteError: If there was an error in the data deletion logic.
+        """
+        errors: MultipleVCFHandlerBaseError = MultipleVCFHandlerBaseError()
+        if not vcf_file_path:
+            errors.append(InvalidArgumentError('The VCF file path is required.'))
+        if not filter_id:
+            errors.append(InvalidArgumentError('The filter id is required.'))
+
+        if errors.errors:
+            raise errors
+
+        # The second item in the tuple indicates the guessed filetype.
+        # In case of .gz file, the guessed filetype is gzip
+        # In case of .vcf file, the guessed filetype is None
+        file_type: Tuple[Union[None, str], str] = mimetypes.guess_type(vcf_file_path)
+        total_deleted_rows = 0
+
+        try:
+
+            if file_type[1] == 'gzip':
+                with gzip.open(vcf_file_path, 'r') as file:
+                    rows = []
+                    for row in file:
+                        if row.startswith(b'##') or row.startswith(b'#'):
+                            rows.append(row)
+                            continue
+                        row_id = row.split(b'\t')[2].decode("utf-8")
+                        if row_id != filter_id:
+                            rows.append(row)
+                        else:
+                            total_deleted_rows += 1
+
+                with gzip.open(vcf_file_path, 'wb') as file:
+                    file.writelines(rows)
+
+            elif file_type[1] is None:
+                with open(vcf_file_path, 'r') as file:
+                    rows = []
+                    for row in file:
+                        if row.startswith('##') or row.startswith('#'):
+                            rows.append(row)
+                            continue
+                        row_id = row.split('\t')[2]
+                        if row_id != filter_id:
+                            rows.append(row)
+                        else:
+                            total_deleted_rows += 1
+
+                with open(vcf_file_path, 'w') as file:
+                    file.writelines(rows)
+        except Exception as ex:
+            raise VcfDataDeleteError(str(ex))
+
+        return total_deleted_rows
+
+
 class UpdateByIdVcfFile:
 
     def run(
@@ -277,7 +352,7 @@ class UpdateByIdVcfFile:
         vcf_row_dict['4'] = vcf_row_dict.pop('ref')
         vcf_row_dict['5'] = vcf_row_dict.pop('alt')
 
-        row_to_append = '\t'.join([str(value) for value in OrderedDict(vcf_row_dict).values()])+'\t'
+        row_to_append = '\t'.join([str(value) for value in OrderedDict(vcf_row_dict).values()]) + '\t'
 
         try:
 
