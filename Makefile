@@ -46,6 +46,8 @@ deploy-local:
 		@echo "2. Ensure you have Docker Compose installed and with permissions to execute it."
 		sudo docker build -f api/devops/migrations/Dockerfile -t vcf-handler-api-migrations .
 		sudo docker tag vcf-handler-api-migrations vcf-handler-api-migrations:0.1
+		sudo docker build -f api/devops/worker/Dockerfile -t vcf-handler-worker .
+		sudo docker tag vcf-handler-worker vcf-handler-worker:0.1
 		sudo docker build -f api/devops/api/Dockerfile -t vcf-handler-api .
 		sudo docker tag vcf-handler-api vcf-handler-api:0.1
 		sudo docker-compose -f api/devops/docker-compose.yml up -d

@@ -1,7 +1,7 @@
 from application.vcf_files.operations import FilterVcfFile, AppendToVcfFile, FilterOutRowsById, \
-    UpdateByIdVcfFile
+    UpdateByIdVcfFile, AsyncFilterOutRowsById
 from application.vcf_files.services import VcfFilePaginationService, AppendDataToVcfFileService, \
-    FilterOutRowsByIdService, VcfFileUpdateByIdService
+    FilterOutRowsByIdService, VcfFileUpdateByIdService, AsyncFilterOutRowsByIdService
 
 
 def vcf_file_pagination_service() -> VcfFilePaginationService:
@@ -19,6 +19,12 @@ def append_data_to_vcf_file_service() -> AppendDataToVcfFileService:
 def filter_out_rows_by_id_service() -> FilterOutRowsByIdService:
     return FilterOutRowsByIdService(
         filter_out_rows_by_id=FilterOutRowsById(),
+    )
+
+
+def async_filter_out_rows_by_id_service() -> AsyncFilterOutRowsByIdService:
+    return AsyncFilterOutRowsByIdService(
+        filter_out_rows_by_id=AsyncFilterOutRowsById(),
     )
 
 

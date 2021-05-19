@@ -32,6 +32,11 @@ services:
       - vcf-handler-api-network
     depends_on:
       - vcf-handler-api-postgresql
+  vcf-redis:
+    container_name: vcf-redis
+    image: redis:6-alpine
+    networks:
+      - vcf-handler-api-network
   vcf-handler-api:
     image: "vcf-handler-api:0.1"
     container_name: vcf-handler-api
@@ -41,10 +46,29 @@ services:
     environment:
       VCF_FILES_API_ENVIRONMENT: "local"
       POSTGRESQL_CONNECTION_URI: "postgresql+psycopg2://vcf_handler_api:123456@vcf-handler-api-postgresql:5432/vcf_handler_api"
+      CELERY_BROKER_URL: "redis://vcf-redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://vcf-redis:6379/0"
     depends_on:
       - vcf-handler-api-postgresql
       - vcf-handler-api-migrations
+      - vcf-redis
     ports:
       - "0.0.0.0:8000:8000"
+    volumes:
+      - /mnt/data:/mnt/data
+  worker:
+    image: "vcf-handler-worker:0.1"
+    container_name: vcf-handler-worker
+    networks:
+      - vcf-handler-api-network
+    command: celery --app application.run_worker.celery worker --loglevel=info
+    environment:
+      VCF_FILES_API_ENVIRONMENT: "local"
+      POSTGRESQL_CONNECTION_URI: "postgresql+psycopg2://vcf_handler_api:123456@vcf-handler-api-postgresql:5432/vcf_handler_api"
+      CELERY_BROKER_URL: "redis://vcf-redis:6379/0"
+      CELERY_RESULT_BACKEND: "redis://vcf-redis:6379/0"
+    depends_on:
+      - vcf-handler-api
+      - vcf-redis
     volumes:
       - /mnt/data:/mnt/data
